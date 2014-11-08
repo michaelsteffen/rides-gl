@@ -1,7 +1,7 @@
 {
   "version": 6,
   "constants": {
-  	"@water": "#456"
+    "@water": "#456"
   },	
   "sources": {
     "satellite": {
@@ -19,7 +19,7 @@
   }, {
     "id": "satellite",
     "type": "raster",
-    "source": "mapbox",
+    "source": "satellite",
     "source-layer": "mapbox_satellite_full"
   }
   ]
