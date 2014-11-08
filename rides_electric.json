@@ -8,6 +8,11 @@
       "type": "raster",
       "url": "mapbox://mapbox.satellite",
       "tileSize": 256
+    },
+    "vector": {
+      "type": "vector",
+      "url": "mapbox://mapbox.mapbox-streets-v5,mas222.eb13d212",
+      "maxzoom": 22
     }
   },
   "layers": [{
@@ -23,8 +28,62 @@
     "source-layer": "mapbox_satellite_full",
     "paint": {
     	"raster-brightness": [0,0.3],
-    	"raster-saturation": -1
+    	"raster-saturation": -1,
+    	"raster-fade-duration": 0
     }
-  }
-  ]
+  }, {
+    "id": "road",
+    "type": "line",
+    "source": "vector",
+    "source-layer": "road",
+    "paint": {
+      "line-color": "#abc",
+      "line-opacity": 0.1
+    }
+  }, {
+    "id": "bridge",
+    "type": "line",
+    "source": "vector",
+    "source-layer": "bridge",
+    "paint": {
+      "line-color": "#abc",
+      "line-opacity": 0.1
+    }
+  }, {
+    "id": "rides-base",
+    "type": "line",
+    "source": "vector",
+    "source-layer": "ride_gpx_tracks",
+    "paint": {
+      "line-color": "rgba(67, 222, 252, 0.4)"
+    }
+  }, {
+    "id": "rides-heat",
+    "type": "line",
+    "source": "vector",
+    "source-layer": "ride_gpx_tracks",
+    "paint": {
+      "line-color": "rgba(255, 255, 255, 0.1)"
+    }
+  }, {
+    "id": "rides-inner-glow",
+    "type": "line",
+    "source": "vector",
+    "source-layer": "ride_gpx_tracks",
+    "paint": {
+      "line-color": "rgba(255, 255, 255, 0.02)",
+      "line-width": 3,
+      "line-blur": 3
+    }
+  }, {
+    "id": "rides-outer-glow",
+    "type": "line",
+    "source": "vector",
+    "source-layer": "ride_gpx_tracks",
+    "paint": {
+      "line-color": "rgba(255, 255, 255, 0.01)",
+      "line-width": 8,
+      "line-blur": 8
+    }
+  }]
 }
