@@ -20,7 +20,7 @@
     "id": "satellite",
     "type": "raster",
     "source": "mapbox",
-    "source-layer": "mapbox_satellite_full"
+    "source-layer": "mapbox_satellite_full",
     "paint": {
     	"raster-brightness": [0,.3]
     	"raster-saturation": -1
