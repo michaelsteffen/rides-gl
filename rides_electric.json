@@ -1,0 +1,30 @@
+{
+  "version": 6,
+  "constants": {
+  	"@water": "#456"
+  },	
+  "sources": {
+    "satellite": {
+      "type": "raster",
+      "url": "mapbox://mapbox.satellite",
+      "tileSize": 256
+    }
+  },
+  "layers": [{
+    "id": "background",
+    "type": "background",
+    "paint": {
+      "background-color": "#000"
+    }
+  }, {
+    "id": "satellite",
+    "type": "raster",
+    "source": "mapbox",
+    "source-layer": "mapbox_satellite_full"
+    "paint": {
+    	"raster-brightness": [0,.3]
+    	"raster-saturation": -1
+    }
+  }
+  ]
+}
