@@ -85,5 +85,20 @@
       "line-width": 8,
       "line-blur": 8
     }
+  }, {
+    "id": "tour-de-pink-2014",
+    "type": "line",
+    "source": "vector",
+    "source-layer": "ride_gpx_tracks",
+    "filter": ["==", "name", "2014-09-14T12:02:48Z"],
+    "paint": {
+      "line-color": "rgb(250, 35, 241)",
+      "line-width": 3,
+      "line-blur": 2,
+      "line-opacity": 0
+    },
+    "paint.pink": {
+      "line-opacity": 1
+    }
   }]
 }
