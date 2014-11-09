@@ -1,0 +1,53 @@
+{
+  "version": 6,
+  "constants": {
+    "@water": "#456"
+  },	
+  "sources": {
+    "satellite": {
+      "type": "raster",
+      "url": "mapbox://mapbox.satellite",
+      "tileSize": 256
+    },
+    "vector": {
+      "type": "vector",
+      "url": "mapbox://mapbox.mapbox-streets-v5,mas222.eb13d212",
+      "maxzoom": 22
+    }
+  },
+  "layers": [{
+    "id": "background",
+    "type": "background",
+    "paint": {
+      "background-color": "#000"
+    }
+  }, {
+    "id": "satellite",
+    "type": "raster",
+    "source": "satellite",
+    "source-layer": "mapbox_satellite_full",
+    "paint": {
+    	"raster-brightness": [0,0.3],
+    	"raster-saturation": -1,
+    	"raster-fade-duration": 0
+    }
+  }, {
+    "id": "road",
+    "type": "line",
+    "source": "vector",
+    "source-layer": "road",
+    "paint": {
+      "line-color": "#abc",
+      "line-opacity": 0.1
+    }
+  }, {
+    "id": "bridge",
+    "type": "line",
+    "source": "vector",
+    "source-layer": "bridge",
+    "paint": {
+      "line-color": "#abc",
+      "line-opacity": 0.1
+    }
+  }]
+}
