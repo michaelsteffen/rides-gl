@@ -49,5 +49,9 @@
       "line-color": "#abc",
       "line-opacity": 0.1
     }
-  }]
+  }],
+  "transition": {
+  	"duration": 1,
+  	"delay": 0
+  }
 }
