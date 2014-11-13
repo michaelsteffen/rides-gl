@@ -65,6 +65,7 @@ function doBigButton() {
 		$('#bigbutton')
 			.removeClass('pure-button-primary')
 			.html('Playing . . .');
+		console.time("animation");
 		showNextRide();
 	} else if (rideMap.mapState == 'complete') {
 		rideMap.map.style.setClassList([]);
@@ -90,6 +91,7 @@ function showNextRide() {
 		window.setTimeout(showNextRide, 1);
 	} else {
 		rideMap.map.style.removeClass(rideMap.rides[rideMap.currentRide] + '_highlight');
+		console.timeEnd("animation");
 		rideMap.mapState = 'complete';
 		$('#bigbutton')
 			.addClass('pure-button-primary')
