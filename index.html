@@ -48,11 +48,13 @@ mapboxgl.util.getJSON('rides_electric_base.json', function (err, style) {
 	var rideBaseLayers = [];
 	var rideTopLayers = [];
 	var rideHighlightLayers = [];
-	rideMap.rides.forEach(function(rideName) {
-		rideBaseLayers = rideBaseLayers.concat(createRideBaseStyles(rideName));
-		rideTopLayers = rideTopLayers.concat(createRideTopStyles(rideName));
-		rideHighlightLayers = rideHighlightLayers.concat(createRideHighlightStyles(rideName));
-	});
+	for (var i=0;i<rideMap.rides.length;i++) {
+		rideName = rideMap.rides[i];
+		rideLayers = createRideLayers(rideName);
+		rideBaseLayers.push(rideLayers.baseLayer);
+		rideTopLayers.push(rideLayers.topLayer);
+		rideHighlightLayers.push(rideLayers.highlightLayer);
+	}
 	style.layers = style.layers.concat(rideBaseLayers, rideTopLayers, rideHighlightLayers);
 	rideMap.map.setStyle(style);
 });
@@ -99,89 +101,55 @@ function showNextRide() {
 	}
 }
 
-function createRideBaseStyles(ride_name) {
-	var styles =  [{
-		"id": ride_name,
+function createRideLayers(rideName) {
+	var baseLayer = {
+		"id": rideName,
 		"type": "line",
 		"source": "vector",
 		"source-layer": "ride_gpx_tracks",
-		"filter": ["==", "name", ride_name],
+		"filter": ["==", "name", rideName],
 		"paint": {
 			"line-color": "rgb(67, 222, 252)",
 			"line-opacity": 0
 		}
-	}, {
-		"id": ride_name + "-inner-glow",
-		"type": "line",
-		"source": "vector",
-		"source-layer": "ride_gpx_tracks",
-		"filter": ["==", "name", ride_name],
-		"paint": {
-			"line-color": "rgb(255, 255, 255)",
-			"line-width": 3,
-			"line-blur": 3,
-			"line-opacity": 0
-		}
-	}, {
-		"id": ride_name + "-outer-glow",
-		"type": "line",
-		"source": "vector",
-		"source-layer": "ride_gpx_tracks",
-		"filter": ["==", "name", ride_name],
-		"paint": {
-			"line-color": "rgb(255, 255, 255)",
-			"line-width": 8,
-			"line-blur": 8,
-			"line-opacity": 0
-		}
-	}];
+	};
 	
-	// These have to be added separately since the property name is dynamically generated
-	styles[0]["paint." + ride_name + "_active"] = {"line-opacity": 0.4}
-	styles[1]["paint." + ride_name + "_active"] = {"line-opacity": 0.02}
-	styles[2]["paint." + ride_name + "_active"] = {"line-opacity": 0.01}
-
-	return styles;
-}
-
-function createRideTopStyles(ride_name) {
-	var styles = [{
-		"id": ride_name + "-heat",
+	var topLayer = {
+		"id": rideName + "-heat",
 		"type": "line",
 		"source": "vector",
 		"source-layer": "ride_gpx_tracks",
-		"filter": ["==", "name", ride_name],
+		"filter": ["==", "name", rideName],
 		"paint": {
 			"line-color": "rgb(255, 255, 255)",
 			"line-opacity": 0
 		}
-	}];
+	};
 	
-	// This has to be added separately since the property name is dynamically generated
-	styles[0]["paint." + ride_name + "_active"] = {"line-opacity": 0.1}
-
-	return styles;
-}
-
-function createRideHighlightStyles(ride_name) {
-	var styles = [{
-		"id": ride_name + "-highlight",
+	var highlightLayer = {
+		"id": rideName + "-highlight",
 		"type": "line",
 		"source": "vector",
 		"source-layer": "ride_gpx_tracks",
-		"filter": ["==", "name", ride_name],
+		"filter": ["==", "name", rideName],
 		"paint": {
 			"line-color": "rgb(250, 35, 241)",
 			"line-width": 3,
 			"line-blur": 2,
 			"line-opacity": 0
 		}
-	}];
+	};
 	
-	// This has to be added separately since the property name is dynamically generated
-	styles[0]["paint." + ride_name + "_highlight"] = {"line-opacity": 1}
-
-	return styles;
+	// These have to be added separately since the property name is dynamically generated
+	baseLayer["paint." + rideName + "_active"] = {"line-opacity": 0.4}
+	topLayer["paint." + rideName + "_active"] = {"line-opacity": 0.1}
+	highlightLayer["paint." + rideName + "_highlight"] = {"line-opacity": 1}
+	
+	return { 
+		"baseLayer": baseLayer, 
+		"topLayer": topLayer, 
+		"highlightLayer": highlightLayer
+	};
 }
 
 function getRideList() {
