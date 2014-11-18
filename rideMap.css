@@ -1,0 +1,238 @@
+body {
+	margin:0;
+	padding:0;
+	font-family: 'Helvetica Neue', 'Arial', sans-serif;
+}
+
+#map {
+	position: relative; 
+	top: 0; 
+	left: 0; 
+	height: 500px; 
+	margin-bottom: 20px;
+}
+
+.button-bigbutton {
+	width: 75%;
+	font-size: 125%;
+	border-radius: 4px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/** Map Controls ========================================== */
+
+body.thumb-drag {
+	cursor: e-resize;
+}
+
+#map-controls {
+	font: 10px sans-serif;
+	width: 100%;
+}
+
+#map-controls.collapsed {
+	margin-top: -55px;
+}
+
+#map-controls svg {
+	background: white;
+	opacity: 0.9;
+	width: 100%;
+}
+
+.buttons {
+	text-align: center;
+}
+
+path.line {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+path.area {
+  fill: #e7e7e7;
+}
+
+path.area#active-area {
+  fill: #eee;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.x.axis line {
+  stroke: #bbb;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.x.axis text {
+	fill: #666;
+}
+
+.y.axis path {
+  fill: none;
+  stroke: none;
+}
+
+.y.axis line {
+  stroke: #bbb;
+  stroke-dasharray: 1,3;
+}
+
+.y.axis text {
+	fill: #666;
+}
+
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: rgb(250, 35, 241);
+}
+
+.selection {
+	cursor: move;
+	fill: #ccc;
+	opacity: 0.2;
+}
+
+.marker .guideline {
+	stroke: black;
+	stroke-width: 0.5px;
+}
+
+.marker.drag .guideline {
+	stroke: black;
+}
+
+.marker .dot {
+	fill: #666;
+}
+
+.marker.drag .dot {
+	fill: black;
+}
+
+.v-tooltip {
+	position: absolute;
+	z-index: 2;
+	opacity: 0;
+	-webkit-transition: opacity 0.2s ease-in-out;
+	-moz-transition: opacity 0.2s ease-in-out;
+	-ms-transition: opacity 0.2s ease-in-out;
+	-o-transition: opacity 0.2s ease-in-out;
+	transition: opacity 0.2s ease-in-out;
+	/** disable events for the tooltip */
+	pointer-events: none;
+}
+
+.v-tooltip-contents {
+	bottom: 0;
+	color: #333;
+	background: white;
+	border: 1px solid #eee;
+	padding: 2px;
+	margin: 2px;
+	position: absolute;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.range-start .v-tooltip-contents, .range-end .inverse .v-tooltip-contents {
+	left: auto;
+	right: 0;
+}
+
+.range-end .v-tooltip-contents, .range-start .inverse .v-tooltip-contents {
+	left: 0;
+	right: auto;
+}
+
+.slider-thumb {
+	background-color: #888;
+	color: white;
+	cursor: e-resize;
+	height: 20px;
+	width: 40px;
+	margin-top: -22px;
+	padding: 0;
+	position: absolute;
+	text-align: center;
+	z-index: 0;
+}
+
+.slider-thumb .date {
+	line-height: 20px;
+	padding: 0px;
+	display: block;
+	font-weight: bold;
+}
+
+.slider.drag .slider-thumb, .slider-thumb:hover {
+	background-color: rgb(93, 92, 93);
+}
+
+.slider.drag .v-tooltip, .slider:hover .v-tooltip {
+	opacity: 1;
+}
+
+.slider.range-end .slider-thumb {
+	margin-left: 0;
+}
+
+.slider.range-start .slider-thumb {
+	margin-left: -40px;
+}
+
+.slider .slider-thumb:before {
+	position: absolute;
+	display: block;
+	content: "";
+	border-style: solid;
+	height: 0;
+	width: 0;
+	top: 20px;
+}
+
+.slider.range-end .slider-thumb:before {
+	border-color: #888 transparent transparent transparent;
+	border-width: 15px 40px 0 0;
+	right: 0px;
+}
+
+.slider.range-end  .slider-thumb:hover:before, .slider.range-end.drag .slider-thumb:before {
+	border-color: rgb(93, 92, 93) transparent transparent transparent;
+}
+
+.slider.range-start .slider-thumb:before {
+	border-color: transparent #888 transparent transparent;
+	border-width: 0 40px 15px 0;
+	right: 0px;
+}
+
+.slider.range-start	 .slider-thumb:hover:before, .slider.range-start.drag .slider-thumb:before {
+	border-color: transparent rgb(93, 92, 93) transparent transparent;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

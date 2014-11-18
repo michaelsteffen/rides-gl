@@ -1,40 +1,33 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<meta charset='utf-8' />
 	<title></title>
-	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />	
+	<link rel='stylesheet' href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.4.0/mapbox-gl.css' />
+	<link rel='stylesheet' href='https://cdn.jsdelivr.net/pure/0.5.0/buttons-min.css' />
+	<link rel='stylesheet' href='rideMap.css' />
 	<script src='https://code.jquery.com/jquery-2.1.1.min.js'></script>
+	<script src='https://code.jquery.com/ui/1.11.2/jquery-ui.min.js'></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js' charset='utf-8'></script>
 	<script src='mapbox-gl-dev.js'></script>
 	<script src='app.js'></script>
 	<script src='map.js'></script>
 	<script src='graph.js'></script>
-	<link rel='stylesheet' href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.4.0/mapbox-gl.css' />
-	<link rel='stylesheet' href='https://cdn.jsdelivr.net/pure/0.5.0/buttons-min.css' />
-	<style>
-	body { margin: 10px; }
-	#map { position: relative; top: 0; left: 0; height: 500px; margin-bottom: 20px;}
-	#controls { }
-	.button-bigbutton {
-		width: 75%;
-		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-		font-size: 125%;
-		border-radius: 4px;
-		display: block;
-		margin-left: auto;
-		margin-right: auto;
-	}
-	</style>
+
 	<script>
 		$().ready(function() {
 			rideMap.bootstrap();
 		});
 	</script>
 </head>
+
 <body>
 
 <div id='map'></div>
-<button id='bigbutton' class='pure-button button-bigbutton pure-button-primary'>Play</button>
+<div id='map-controls'></div>
+<!-- <button id='bigbutton' class='pure-button button-bigbutton pure-button-primary'>Play</button> -->
 
 </body>
 </html>

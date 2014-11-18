@@ -2,6 +2,10 @@
 	'use strict';
 
 	rideMap.buildMap = buildMap;
+	
+	var updateTimeout;
+	var needsUpdate = true;
+	var lastStartDate, lastEndDate;
 
 	/**
 	 * Loads the style and builds the mapbox gl map
@@ -10,8 +14,10 @@
 	 */
 	function buildMap() {
 
-		var map,
-		    dfd = new jQuery.Deferred();
+		var map;
+		var dfd = new jQuery.Deferred();
+		var startDate = {};
+		var endDate = {};
 		
 		mapboxgl.util.getJSON('rides_electric_base.json', function (err, style) {
 			if (err) throw err;
@@ -29,31 +35,25 @@
 			
 			// add the compass
 			map.addControl(new mapboxgl.Navigation());
-
-			// Update the map, when the time period has been changed
-			/* ToDo: 
-			var startYear = minYear,
-				endYear = minYear,
-				updateTimeout;
-
-			$(document).bind("slider-range-end", function(event, year) {
-				endYear = year;
+			
+			var quickTimeout;
+			$(document).bind("slider-range-end", function(event, date) {
+				endDate = date;
 				// prevent updates if the slider moves too fast
-				clearTimeout(updateTimeout);
-				updateTimeout = setTimeout(function() {
-					showAllBetween(startYear, endYear);
+				clearTimeout(quickTimeout);
+				quickTimeout = setTimeout(function() {
+					_showAllBetween(startDate, endDate);
 				}, 1);
 			});
 
-			$(document).bind("slider-range-start", function(event, year) {
-				startYear = year;
+			$(document).bind("slider-range-start", function(event, date) {
+				startDate = date;
 				// prevent updates if the slider moves too fast
-				clearTimeout(updateTimeout);
-				updateTimeout = setTimeout(function() {
-					showAllBetween(startYear, endYear);
+				clearTimeout(quickTimeout);
+				quickTimeout = setTimeout(function() {
+					_showAllBetween(startDate, endDate);
 				}, 1);
 			});
-			*/
 
 			dfd.resolve(map);
 		});
@@ -126,7 +126,7 @@
 		    allLayers = [];
 		
 		for (var i=0;i<rideMap.rides.length;i++) {
-			var rideName = rideMap.rides[i];
+			var rideName = rideMap.rides[i].name;
 			var rideLayers = _createRideLayers(rideName);
 			
 			rideBaseLayers.push(rideLayers.baseLayer);
@@ -139,20 +139,15 @@
 		return allLayers;
 	}
 
-	var updateTimeout,
-	    needsUpdate = true,
-	    lastEndYear,
-	    lastStartYear;
-
 	/**
 	 * Shows all rides for the specified period
 	 */
-	/* ToDo:
-	function showAllBetween(startDate, endDate) {
-
+	function _showAllBetween(startDate, endDate) {
+		// set dates to midnight boundary
+		lastStartDate = startDate = d3.time.day.floor(startDate);
+		lastEndDate = endDate = d3.time.day.floor(endDate);
+		
 		// ensure updates at a max of 100ms frequency
-		lastStartDate = startDate;
-		lastEndDate = endDate;
 		if (!needsUpdate) return;
 		needsUpdate = false;
 
@@ -160,24 +155,22 @@
 			needsUpdate = true;
 
 			if (lastStartDate != startDate || lastEndDate != endDate) {
-				showAllBetween(lastStartDate, lastEndDate);
+				_showAllBetween(lastStartDate, lastEndDate);
 			}
 		}, 100);
 
+		// show the selected layers
 		var classes = [];
-		for(var i = startYear; i <= endYear; i++) {
-			classes.push("active-" + i);
+		var dates = rideMap.dates;
+		var startIndex = d3.time.days(dates[0].date, startDate).length; 
+		var endIndex = d3.time.days(dates[0].date, endDate).length;
+		for (var i = startIndex; i <= endIndex; i++) {
+			var rides = dates[i].rides;
+			for (var j = 0; j < rides.length; j++) {
+				classes.push(rides[j] + '_active');
+			}
 		}
-
-		// show the selected layers 
-		classes = [];
-		for(var j = minYear; j < startYear; j++) {
-			classes.push("active-" + j);
-		}
-		for(var j = endYear+1; j < maxYear; j++) {
-			classes.push("active-" + j);
-		}
-
-		map.style.setClasses(classes); 
-	} */
+		
+		rideMap.map.style.setClassList(classes); 
+	}
 })();
