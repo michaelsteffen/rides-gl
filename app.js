@@ -1,7 +1,6 @@
 var rideMap = {
 	rides: [],
 	dates: [],
-	startDate: {},
 	currentRide: -1,
 	mapState: 'clear',
 	containerDiv: $('#map'),
@@ -45,14 +44,14 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 			// (we are trusting that the input data is sorted by date)
 			
 			// midnight on the day of the first ride . . .
-			var startDate = rideMap.startDate = d3.time.day.floor(new Date(data[0].date));
+			var firstDate = d3.time.day.floor(new Date(data[0].date));
  
 			for (var i=0; i < data.length; i++) {
 				var ride = data[i];
 				var date = d3.time.day.floor(new Date(ride.date));
 				ride.date = date;
-				// number of midnights since the startDate
-				var index = d3.time.days(startDate, date).length;
+				// number of midnights since the firstDate
+				var index = d3.time.days(firstDate, date).length;
 				if (!rideMap.dates[index]) {
 					rideMap.dates[index] = { 
 						date: date,

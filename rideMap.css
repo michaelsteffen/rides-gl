@@ -94,7 +94,7 @@ path.area#active-area {
   fill: steelblue;
 }
 
-.bar:hover {
+.bar.highlight {
   fill: rgb(250, 35, 241);
 }
 

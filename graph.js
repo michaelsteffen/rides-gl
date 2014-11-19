@@ -3,17 +3,19 @@
 
 	rideMap.buildGraph = buildGraph;
 
-	var margin,
-	    width,
-	    height,
-	    x, xAxis, gXAxis,
-	    y, yAxis, gYAxis,
-	    rightBuffer,
-	    dayWidth,
-	    rides, dates,
-	    rangeSlider;
+	var margin;
+	var width;
+	var height;
+	var x, xAxis, gXAxis;
+	var y, yAxis, gYAxis;
+	var rightBuffer;
+	var dayWidth;
+	var rides, dates;
+	var rangeSlider;
+	var highlights = [];
 
 	var formatDate = d3.time.format("%b %-d");
+	var barID = d3.time.format("%Y-%m-%d");
 
 	/**
 	 * Builds the base DOM structure for the Graph.
@@ -97,19 +99,22 @@
 		gYAxis = axesLayer.append("g")
 			.attr("class", "y axis")
 			.call(yAxis)
-			.call(customYTicks);
+			.call(_customYTicks);
 			
 		// build the range slider
-	  rangeSlider = buildRangeSlider(sliderLayer);
+	  rangeSlider = _buildRangeSlider(sliderLayer);
 		
 		graphLayer.selectAll(".bar")
       .data(dates)
 			.enter().append("rect")
 			.attr("class", "bar")
+			.attr("id", function(d) { return barID(d.date); })
       .attr("x", function(d) { return x(d.date); })
       .attr("width", dayWidth)
       .attr("y", height)
-      .attr("height", 0);
+      .attr("height", 0)
+      .on("mouseenter", _barOnMouseEnter)
+      .on("mouseleave", _barOnMouseLeave);
       
     var maxLen = d3.max(dates, function(d) { return d.length; });
     graphLayer.selectAll(".bar")
@@ -147,19 +152,42 @@
 	/**
 	 * Adjusts the position of the ticks on the Y axis
 	 */
-	function customYTicks(g) {
+	function _customYTicks(g) {
 	  g.selectAll("text")
 		  .attr("x", 2)
 		  .attr("dy", -3);
+	}
+	
+	function _barOnMouseEnter(d) {
+		if (d3.event.shiftKey) {
+			highlights.push(this);
+		} else {
+			highlights = [this];
+		}
+		_updateHighlights();
+	}
+
+	function _barOnMouseLeave(d) {
+		if (!d3.event.shiftKey) {
+			highlights.splice(highlights.indexOf(this), 1);
+		}
+		_updateHighlights();
+	}
+	
+	function _updateHighlights(d) {
+		d3.selectAll(".bar").attr("class", "bar");
+		for (var i=0; i<highlights.length; i++) {
+			d3.select(highlights[i]).attr("class", "bar highlight");
+		}
 	}
 
 	/**
 	 * builds the Range slider composed of two separate sliders and a selection marquee
 	 */
-	function buildRangeSlider(canvas) {
+	function _buildRangeSlider(canvas) {
 		var startDate = d3.time.day.offset(dates[dates.length-1].date, -90);
-		var startSlider = buildSlider(x(startDate), "range-start", canvas);
-		var endSlider = buildSlider(width - rightBuffer + dayWidth, "range-end", canvas);
+		var startSlider = _buildSlider(x(startDate), "range-start", canvas);
+		var endSlider = _buildSlider(width - rightBuffer + dayWidth, "range-end", canvas);
 
 		// constrain the slider to not past each other or the ends of the graph
 		startSlider.constrain(function(event, ui) {
@@ -173,10 +201,10 @@
 		});
 
 		var dragBehavior = d3.behavior.drag()
-			.on("drag", onSelectionDrag);
+			.on("drag", _onSelectionDrag);
 
 		// build the selection window
-		var selection =	 canvas.append("rect")
+		var selection =	canvas.append("rect")
 			.attr("id", "selection")
 			.attr("class", "selection")
 			.attr("x", startSlider.pos())
@@ -221,7 +249,7 @@
 		/**
 		 * Handles dragging of the selection window
 		 */
-		function onSelectionDrag() {
+		function _onSelectionDrag() {
 			var $this = d3.select(this),
 				currentX = +$this.attr("x"),
 				sWidth = +$this.attr("width"),
@@ -244,7 +272,7 @@
 		 * If the user drags the thumb div, the svg graphics will be updated.
 		 * If the svg guideline is being updated (we're using d3 transitions), the div is also updated.
 		 */
-		function buildSlider(myPos, sliderName, canvas) {
+		function _buildSlider(myPos, sliderName, canvas) {
 			var _pos = myPos;
 			var _name = sliderName;
 			var _value = 0;
@@ -359,7 +387,7 @@
 				pos: pos
 			};
 			
-		} //buildSlider
+		} //_buildSlider
 
 		// RangeSlider interface
 		return {
