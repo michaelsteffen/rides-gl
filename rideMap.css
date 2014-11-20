@@ -12,14 +12,86 @@ body {
 	margin-bottom: 20px;
 }
 
-.button-bigbutton {
-	width: 75%;
-	font-size: 125%;
-	border-radius: 4px;
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
+/* === Dropdown Menus === */
+
+#presets
+{
+	margin-top:20px
 }
+
+#presets ul
+{
+	color:#aaa;
+	list-style:none;
+	position:relative;
+	float:left;
+	margin: 0px 0px 0px 35px;
+	padding:0;
+	line-height:20px;
+}
+
+#presets ul a,
+#presets ul .label
+{
+	display:block;
+	color:#666;
+	text-decoration:none;
+	font-size:10px;
+	padding:0 7px;
+}
+
+#presets .fa
+{
+	color: #333;
+	padding-left:20px;
+}
+
+#presets ul .label
+{
+	font-weight:700;
+}
+
+#presets ul li
+{
+	position:relative;
+	float:left;
+	margin:0;
+	padding:0
+}
+
+#presets ul li a:hover
+{
+	background:#f6f6f6
+}
+
+/* for dropdown: not used */
+
+/* #presets ul ul
+{
+	display:none;
+	position:absolute;
+	top:100%;
+	left:0;
+	background:#fff;
+	padding:0
+}
+
+#presets ul ul li
+{
+	float:none;
+	width:180px
+}
+
+#presets ul ul a
+{
+	line-height:120%;
+	padding:5px 15px
+}
+
+#presets ul li:hover > ul
+{
+	display:block
+} */
 
 /** Map Controls ========================================== */
 
@@ -28,7 +100,7 @@ body.thumb-drag {
 }
 
 #map-controls {
-	font: 10px sans-serif;
+	font-size: 10px;
 	width: 100%;
 }
 
@@ -38,7 +110,6 @@ body.thumb-drag {
 
 #map-controls svg {
 	background: white;
-	opacity: 0.9;
 	width: 100%;
 }
 

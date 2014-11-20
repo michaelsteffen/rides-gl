@@ -251,13 +251,13 @@
 			d3.transition()
 				.duration(duration)
 				.tween("moveTween", function () {
-					var sI = d3.interpolateRound(startSlider.pos(), newStart),
-						eI = d3.interpolateRound(endSlider.pos(), newEnd),
-						_width = d3.select(this).attr("width");
+					var sI = d3.interpolateRound(startSlider.pos(), newStart);
+					var eI = d3.interpolateRound(endSlider.pos(), newEnd);
+					var _width = d3.select(this).attr("width");
 
 					return function(t) {
 						var iStart = sI(t),
-							iEnd = eI(t);
+						    iEnd = eI(t);
 						startSlider.update(iStart, true);
 						endSlider.update(iEnd, true);
 						updateSelection();

@@ -5,8 +5,8 @@
 	<meta charset='utf-8' />
 	<title></title>
 	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />	
+	<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
 	<link rel='stylesheet' href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.4.0/mapbox-gl.css' />
-	<link rel='stylesheet' href='https://cdn.jsdelivr.net/pure/0.5.0/buttons-min.css' />
 	<link rel='stylesheet' href='rideMap.css' />
 	<script src='https://code.jquery.com/jquery-2.1.1.min.js'></script>
 	<script src='https://code.jquery.com/ui/1.11.2/jquery-ui.min.js'></script>
@@ -27,7 +27,36 @@
 
 <div id='map'></div>
 <div id='map-controls'></div>
-<!-- <button id='bigbutton' class='pure-button button-bigbutton pure-button-primary'>Play</button> -->
+<div id='presets'>
+<ul>
+	<li><span class='label'>Presets:</span></li>
+	
+	<li><i class="fa fa-map-marker"></i></li>
+	<li><a href="#" onclick="rideMap.map.flyTo([29.8752,-95.9683],9,0);return false;">Houston</a></li>
+	<li>/</li>
+	<li><a href="#" onclick="rideMap.map.flyTo([29.7097, -95.4255],13.05,-22);return false;">West University</a></li>
+	<li>/</li>
+	<li><a href="#" onclick="rideMap.map.flyTo([37.8505, -121.2665],9.18,0);return false;">Antioch</a></li>
+	<li>/</li>
+	<li><a href="#" onclick="rideMap.map.flyTo([38.9626, -77.5945],9.25,16);return false;">Washington, DC</a></li>
+	
+	<li><i class="fa fa-calendar"></i></li>
+	<li><a href="#">Last 30 Days</a></li>
+	<li>/</li>
+	<li><a href="#">Last 90 Days</a></li>
+	<li>/</li>
+	<li><a href="#">2013</a></li>
+	<li>/</li>
+	<li><a href="#">2014</a></li>
+	<li>/</li>
+	<li><a href="#">All Time</a></li>
+	
+	<li><i class="fa fa-film"></i></li>
+	<li><a href="#">Build the Map</a></li>
+	<li>/</li>
+	<li><a href="#">Sliding 30 Day Window</a></li>
+</ul>
+</div>
 
 </body>
 </html>
