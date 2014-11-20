@@ -407,7 +407,7 @@
 				marker.attr("transform", "translate(" + posX + "," + 0 + ")");
 
 				var valueOffset = 0;
-				if (_name == "slider-end") {
+				if (_name == "range-end") {
 					valueOffset = -dayWidth;
 				}
 
