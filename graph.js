@@ -101,7 +101,7 @@
 			.call(_customYTicks);
 			
 		// build the range slider
-	  rangeSlider = _buildRangeSlider(sliderLayer);
+	  rangeSlider = rideMap.rangeSlider = _buildRangeSlider(sliderLayer);
 		
 		// add the bars
 		graphLayer.selectAll(".bar")
@@ -246,13 +246,22 @@
 		/**
 		 * Slides the two sliders to the new positions using a transition
 		 */
-		function slideTo(newStart, newEnd, duration, callback) {
+		function slideTo(newStartDate, newEndDate, duration, callback) {
 			var duration = duration || 2000;
+
+			newStartDate = _resolveDate(newStartDate);
+			newEndDate = _resolveDate(newEndDate);
+			
+			if (!(newStartDate && newEndDate)) return;
+			
+			var newStartPos = x(newStartDate);
+			var newEndPos = x(newEndDate)+dayWidth;
+			
 			d3.transition()
 				.duration(duration)
 				.tween("moveTween", function () {
-					var sI = d3.interpolateRound(startSlider.pos(), newStart);
-					var eI = d3.interpolateRound(endSlider.pos(), newEnd);
+					var sI = d3.interpolateRound(startSlider.pos(), newStartPos);
+					var eI = d3.interpolateRound(endSlider.pos(), newEndPos);
 					var _width = d3.select(this).attr("width");
 
 					return function(t) {
@@ -264,6 +273,27 @@
 					}
 				})
 				.each("end", callback);
+		}
+		
+		function _resolveDate(inDate) {
+			var dates = rideMap.dates;
+			
+			if (typeof inDate === 'number' && Math.abs(inDate) < dates.length) {
+				if (inDate > dates.length) inDate = -1;
+				if (inDate < -dates.length) inDate = 0;
+				if (inDate >= 0 ) {
+					return dates[inDate].date;
+				} else {
+					return dates[dates.length + inDate].date;
+				} 
+			} else if (typeof inDate === 'string') {
+				var date = new Date(inDate);
+				if (date > dates[dates.length-1].date) date = dates[dates.length-1].date;
+				if (date < dates[0].date) date = dates[0].date;
+				return date;
+			}
+			
+			return;
 		}
 
 		/**

@@ -2,11 +2,9 @@ var rideMap = {
 	rides: [],
 	dates: [],
 	rideToDate: {},
-	currentRide: -1,
-	mapState: 'clear',
 	containerDiv: '#map',
 	map: {},
-	graph: {}
+	rangeSlider: {}
 };
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQesSHxUV1w';
@@ -25,8 +23,6 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 			$.when(rideMap.getRideList())
 				.then(rideMap.buildMap)
 				.then(rideMap.buildGraph);
-				
-			$('#bigbutton').on("click", _doBigButton);
 		} else {
 			$('html').addClass('not-supported');
 		}
@@ -68,7 +64,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 			for (var i=0; i < rideMap.dates.length; i++) {
 				if (rideMap.dates[i] == null) {
 					rideMap.dates[i] = { 
-						date: d3.time.day.offset(date, i),
+						date: d3.time.day.offset(firstDate, i),
 						length: 0, 
 						rides: [] 
 					}; 

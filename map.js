@@ -31,8 +31,9 @@
 			map = rideMap.map = new mapboxgl.Map({
 				container: 'map',
 				style: style,
-				center: [29.8752, -95.9683],
-				zoom: 9
+				center: [29.8730, -95.9572],
+				zoom: 9.14,
+				hash: true
 			});
 			
 			// add the compass
