@@ -14,7 +14,7 @@
 	var rangeSlider;
 
 	var formatDate = d3.time.format("%b %-d");
-	var barID = d3.time.format("%Y-%m-%d");
+	var barID = d3.time.format("bar-%Y%m%d");
 
 	/**
 	 * Builds the base DOM structure for the Graph.
@@ -103,6 +103,7 @@
 		// build the range slider
 	  rangeSlider = _buildRangeSlider(sliderLayer);
 		
+		// add the bars
 		graphLayer.selectAll(".bar")
       .data(dates)
 			.enter().append("rect")
@@ -114,7 +115,8 @@
       .attr("height", 0)
       .on("mouseenter", _barOnMouseEnter)
       .on("mouseleave", _barOnMouseLeave);
-      
+    
+    // animate the bar entry
     var maxLen = d3.max(dates, function(d) { return d.length; });
     graphLayer.selectAll(".bar")
       .transition()
@@ -122,6 +124,17 @@
       .delay( function(d,i) { return i/dates.length * 1000; } )
       .attr("y", function(d) { return y(d.length); })
       .attr("height", function(d) { return height - y(d.length); });
+
+		// accept highlight events thrown by the map
+		$(document).bind("map-add-highlight", function(event, rideNames) {
+			var bars = _getBarsFromRideNames(rideNames);
+			_addHighlight(bars);
+		});
+		
+		$(document).bind("map-set-highlight", function(event, rideNames) {
+			var bars = _getBarsFromRideNames(rideNames);
+			_setHighlight(bars);
+		});
 
 		// update the graph on resize
 		d3.select(window).on('resize', function() {
@@ -159,27 +172,45 @@
 	
 	function _barOnMouseEnter(d) {
 		if (d3.event.shiftKey) {
-			_addHighlight([this]);
+			_addHighlight(['#' + this.id]);
+			$(document).trigger("graph-add-highlight", [d.rides]);
 		} else {
-			_setHighlight([this]);
+			_setHighlight(['#' + this.id]);
+			$(document).trigger("graph-set-highlight", [d.rides]);
 		}
 	}
 	
 	function _barOnMouseLeave(d) {
 		if (!d3.event.shiftKey) {
 			_setHighlight([]);
+			$(document).trigger("graph-set-highlight", [[]]);
 		}
 	}
 
 	function _addHighlight(bars) {
-		d3.selectAll(bars).attr("class", "bar highlight");
+		var barList = bars.join(', ');
+		d3.selectAll(barList).attr("class", "bar highlight");
 	}
 	
 	function _setHighlight(bars) {
 		d3.selectAll(".bar").attr("class", "bar");
-		d3.selectAll(bars).attr("class", "bar highlight");
+		if (bars.length) {
+			var barList = bars.join(', ');
+			d3.selectAll(barList).attr("class", "bar highlight");
+		}
 	}
-
+	
+	function _getBarsFromRideNames(rideNames) {
+		var bars = [];
+		for (var i=0; i<rideNames.length; i++) {
+			var rideName = rideNames[i];
+			var id = barID(rideMap.rideToDate[rideName]);
+			bars.push('#' + id);
+		}
+		
+		return bars;
+	}
+	
 	/**
 	 * builds the Range slider composed of two separate sliders and a selection marquee
 	 */

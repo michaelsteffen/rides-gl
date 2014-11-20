@@ -1,6 +1,7 @@
 var rideMap = {
 	rides: [],
 	dates: [],
+	rideToDate: {},
 	currentRide: -1,
 	mapState: 'clear',
 	containerDiv: '#map',
@@ -72,6 +73,12 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 						rides: [] 
 					}; 
 				}
+			}
+			
+			// build ride->date crosswalk
+			for (var i=0; i < data.length; i++) {
+				var ride = data[i];
+				rideMap.rideToDate[ride.name] = ride.date;
 			}
 			
 			dfd.resolve(data);

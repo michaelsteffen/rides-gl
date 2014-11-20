@@ -64,6 +64,14 @@
 				}, 1);
 			});
 
+			$(document).bind("graph-add-highlight", function(event, rideNames) {
+				_addHighlight(rideNames);
+			});
+		
+			$(document).bind("graph-set-highlight", function(event, rideNames) {
+				_setHighlight(rideNames);
+			});
+
 			dfd.resolve(map);
 		});
 
@@ -177,14 +185,17 @@
 	function _rideOnMouseEnter(rideNames) {
 		if (shiftDown) {
 			_addHighlight(rideNames);
+			$(document).trigger("map-add-highlight", [rideNames]);
 		} else {
 			_setHighlight(rideNames);
+			$(document).trigger("map-set-highlight", [rideNames]);	
 		}
 	}
 	
 	function _rideOnMouseLeave(rideNames) {
 		if (!shiftDown) {
 			_setHighlight([]);
+			$(document).trigger("map-set-highlight", [[]]);
 		}
 	}
 
