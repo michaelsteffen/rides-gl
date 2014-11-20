@@ -158,16 +158,26 @@
 	}
 	
 	function _barOnMouseEnter(d) {
-		if (!d3.event.shiftKey) {
-			d3.selectAll(".bar").attr("class", "bar");
+		if (d3.event.shiftKey) {
+			_addHighlight([this]);
+		} else {
+			_setHighlight([this]);
 		}
-		d3.select(this).attr("class", "bar highlight");
 	}
-
+	
 	function _barOnMouseLeave(d) {
 		if (!d3.event.shiftKey) {
-			d3.selectAll(".bar").attr("class", "bar");
+			_setHighlight([]);
 		}
+	}
+
+	function _addHighlight(bars) {
+		d3.selectAll(bars).attr("class", "bar highlight");
+	}
+	
+	function _setHighlight(bars) {
+		d3.selectAll(".bar").attr("class", "bar");
+		d3.selectAll(bars).attr("class", "bar highlight");
 	}
 
 	/**

@@ -158,7 +158,7 @@
 			for (var i=0; i<features.length; i++) {
 				var feature = features[i];
 				if (style.hasClass(feature.properties.name + '_active')) {
-					activeFeatures.push(feature.properties.name + '_highlight');
+					activeFeatures.push(feature.properties.name);
 				}
 			}
 			
@@ -167,29 +167,42 @@
 			if (!change) {
 				return;
 			} else if (activeFeatures.length == 0) {
-				_rideOnMouseLeave(event, activeFeatures);
+				_rideOnMouseLeave(activeFeatures);
 			} else {
-				_rideOnMouseEnter(event, activeFeatures);
+				_rideOnMouseEnter(activeFeatures);
 			}
 		});
 	}
 	
-	function _rideOnMouseEnter(event, features) {
-		var map = rideMap.map;
-		var classes = map.style.getClassList();	 
-		if (!shiftDown) {
-			classes = classes.filter(function(e) { return e.slice(-10) !== '_highlight' });
+	function _rideOnMouseEnter(rideNames) {
+		if (shiftDown) {
+			_addHighlight(rideNames);
+		} else {
+			_setHighlight(rideNames);
 		}
-		classes = classes.concat(features);
+	}
+	
+	function _rideOnMouseLeave(rideNames) {
+		if (!shiftDown) {
+			_setHighlight([]);
+		}
+	}
+
+	function _addHighlight(rideNames) {
+		var map = rideMap.map;
+		var classes = map.style.getClassList();	
+		var newClasses = rideNames.map(function(e) { return e + '_highlight' });
+		classes = classes.concat(newClasses);
 		map.style.setClassList(classes);
 	}
 	
-	function _rideOnMouseLeave(event, features) {
-		if (!shiftDown) {
-			var classes = rideMap.map.style.getClassList();	 
-			classes = classes.filter(function(e) { return e.slice(-10) !== '_highlight' });
-			rideMap.map.style.setClassList(classes);
-		}
+	function _setHighlight(rideNames) {
+		var map = rideMap.map;
+		var classes = map.style.getClassList();	
+		var newClasses = rideNames.map(function(e) { return e + '_highlight' });
+		classes = classes.filter(function(e) { return e.slice(-10) !== '_highlight' });
+		classes = classes.concat(newClasses);
+		map.style.setClassList(classes);
 	}
 
 	function _onkeydown(event) {
