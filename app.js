@@ -85,8 +85,31 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 		return dfd.promise();
 	}
 	
-	function animateBuild(duration) {
+	function animateBuild(duration, trailingRides) {
 		var duration = duration || 60000;
+		if (duration < 2000) duration = 2000;
+		var dates = rideMap.dates;
+		var interpIndex = d3.interpolateRound(0, dates.length-1);
+		
+		rideMap.rangeSlider.slideTo(0, 1, 500, null, function() {
+			window.setTimeout(function() {
+				rideMap.rangeSlider.slideTo(0, -1, duration-1000, "linear", null, function(t) {
+					// get the date based on where we are in the transition (t)
+					var index = interpIndex(t);
+					var startIndex = index - trailingRides;
+					if (startIndex < 0) startIndex = 0;
+					var rides = [];
+					for (var i = startIndex; i <= index; i++) { 
+						var rides = rides.concat(dates[i].rides);
+					}
+		
+					// create mock highlight events from the graph and the map to cause
+					// highlight updates on the other
+					$(document).trigger("graph-set-highlight", [rides]);
+					$(document).trigger("map-set-highlight", [rides]);
+				});
+			}, 500);
+		});
 	}
 	
 	function animateSlidingWindow(days, duration) {
@@ -94,9 +117,9 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 		var duration = duration || 20000;
 		if (duration < 2000) duration = 2000;
 		
-		rideMap.rangeSlider.slideTo(0, days, 500, function() {
+		rideMap.rangeSlider.slideTo(0, days, 500, null, function() {
 			window.setTimeout(function() {
-				rideMap.rangeSlider.slideTo(-(days+1), -1, duration-1000, null, "linear");
+				rideMap.rangeSlider.slideTo(-(days+1), -1, duration-1000, "linear");
 			}, 500);
 		});
 	}
