@@ -246,8 +246,9 @@
 		/**
 		 * Slides the two sliders to the new positions using a transition
 		 */
-		function slideTo(newStartDate, newEndDate, duration, callback) {
+		function slideTo(newStartDate, newEndDate, duration, callback, ease) {
 			var duration = duration || 2000;
+			var ease = ease || "cubic-in-out";
 
 			newStartDate = _resolveDate(newStartDate);
 			newEndDate = _resolveDate(newEndDate);
@@ -272,6 +273,7 @@
 						updateSelection();
 					}
 				})
+				.ease(ease)
 				.each("end", callback);
 		}
 		

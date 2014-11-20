@@ -14,6 +14,8 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 
 	rideMap.bootstrap = bootstrap;
 	rideMap.getRideList = getRideList;
+	rideMap.animateBuild = animateBuild;
+	rideMap.animateSlidingWindow = animateSlidingWindow;
 
 	/**
 	 * Boostraps the ride map
@@ -81,6 +83,22 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 		}); 
 		
 		return dfd.promise();
+	}
+	
+	function animateBuild(duration) {
+		var duration = duration || 60000;
+	}
+	
+	function animateSlidingWindow(days, duration) {
+		var days = days || 30;
+		var duration = duration || 20000;
+		if (duration < 2000) duration = 2000;
+		
+		rideMap.rangeSlider.slideTo(0, days, 500, function() {
+			window.setTimeout(function() {
+				rideMap.rangeSlider.slideTo(-(days+1), -1, duration-1000, null, "linear");
+			}, 500);
+		});
 	}
 	
 	function _doBigButton() {
