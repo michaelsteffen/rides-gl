@@ -12,7 +12,6 @@
 	var dayWidth;
 	var rides, dates;
 	var rangeSlider;
-	var highlights = [];
 
 	var formatDate = d3.time.format("%b %-d");
 	var barID = d3.time.format("%Y-%m-%d");
@@ -159,25 +158,15 @@
 	}
 	
 	function _barOnMouseEnter(d) {
-		if (d3.event.shiftKey) {
-			highlights.push(this);
-		} else {
-			highlights = [this];
+		if (!d3.event.shiftKey) {
+			d3.selectAll(".bar").attr("class", "bar");
 		}
-		_updateHighlights();
+		d3.select(this).attr("class", "bar highlight");
 	}
 
 	function _barOnMouseLeave(d) {
 		if (!d3.event.shiftKey) {
-			highlights.splice(highlights.indexOf(this), 1);
-		}
-		_updateHighlights();
-	}
-	
-	function _updateHighlights(d) {
-		d3.selectAll(".bar").attr("class", "bar");
-		for (var i=0; i<highlights.length; i++) {
-			d3.select(highlights[i]).attr("class", "bar highlight");
+			d3.selectAll(".bar").attr("class", "bar");
 		}
 	}
 

@@ -6,6 +6,8 @@
 	var updateTimeout;
 	var needsUpdate = true;
 	var lastStartDate, lastEndDate;
+	var lastFeatures;
+	var shiftDown;
 
 	/**
 	 * Loads the style and builds the mapbox gl map
@@ -36,6 +38,13 @@
 			// add the compass
 			map.addControl(new mapboxgl.Navigation());
 			
+			// set up highlighting of rides on mouseover
+			map.on('hover', _onHover);
+			// detect shift key presses since MB does not support on its own
+			$(document).on('keydown', _onkeydown);
+			$(document).on('keyup', _onkeyup);
+			
+			// accept update events thrown by the graph
 			var quickTimeout;
 			$(document).bind("slider-range-end", function(event, date) {
 				endDate = date;
@@ -71,6 +80,7 @@
 			"source": "vector",
 			"source-layer": "ride_gpx_tracks",
 			"filter": ["==", "name", rideName],
+			"interactive": true,
 			"paint": {
 				"line-color": "rgb(67, 222, 252)",
 				"line-opacity": 0
@@ -97,7 +107,7 @@
 			"filter": ["==", "name", rideName],
 			"paint": {
 				"line-color": "rgb(250, 35, 241)",
-				"line-width": 3,
+				"line-width": 2,
 				"line-blur": 2,
 				"line-opacity": 0
 			}
@@ -138,6 +148,62 @@
 	
 		return allLayers;
 	}
+
+	function _onHover(event) {
+		rideMap.map.featuresAt(event.point, {radius:5}, function(err, features) {
+			if (err) throw err;
+			
+			var activeFeatures = [];
+			var style = rideMap.map.style;
+			for (var i=0; i<features.length; i++) {
+				var feature = features[i];
+				if (style.hasClass(feature.properties.name + '_active')) {
+					activeFeatures.push(feature.properties.name + '_highlight');
+				}
+			}
+			
+			var change = !(JSON.stringify(activeFeatures) === JSON.stringify(lastFeatures));
+			lastFeatures = activeFeatures;
+			if (!change) {
+				return;
+			} else if (activeFeatures.length == 0) {
+				_rideOnMouseLeave(event, activeFeatures);
+			} else {
+				_rideOnMouseEnter(event, activeFeatures);
+			}
+		});
+	}
+	
+	function _rideOnMouseEnter(event, features) {
+		var map = rideMap.map;
+		var classes = map.style.getClassList();	 
+		if (!shiftDown) {
+			classes = classes.filter(function(e) { return e.slice(-10) !== '_highlight' });
+		}
+		classes = classes.concat(features);
+		map.style.setClassList(classes);
+	}
+	
+	function _rideOnMouseLeave(event, features) {
+		if (!shiftDown) {
+			var classes = rideMap.map.style.getClassList();	 
+			classes = classes.filter(function(e) { return e.slice(-10) !== '_highlight' });
+			rideMap.map.style.setClassList(classes);
+		}
+	}
+
+	function _onkeydown(event) {
+		if (event.shiftKey) {
+			shiftDown = true;
+		}
+	}
+
+	function _onkeyup(event) {
+		if (!event.shiftKey) {
+			shiftDown = false;
+		}
+	}
+
 
 	/**
 	 * Shows all rides for the specified period

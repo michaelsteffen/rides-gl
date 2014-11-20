@@ -3,7 +3,7 @@ var rideMap = {
 	dates: [],
 	currentRide: -1,
 	mapState: 'clear',
-	containerDiv: $('#map'),
+	containerDiv: '#map',
 	map: {},
 	graph: {}
 };
