@@ -99,7 +99,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 					var index = interpIndex(t);
 					
 					// bail if we haven't advanced a full date
-					if (index == lastIndex) return;
+					if (index === lastIndex) return;
 					
 					var startIndex = index - trailingRides;
 					if (startIndex < 0) startIndex = 0;
