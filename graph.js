@@ -243,6 +243,9 @@
 			.attr("width", endSlider.pos() - startSlider.pos())
 			.call(dragBehavior);
 
+		// initialize the selected bars and rides
+		updateSelection();
+
 		/**
 		 * Slides the two sliders to the new positions using a transition
 		 */
@@ -308,6 +311,9 @@
 
 			selection.attr("x", startSlider.pos());
 			selection.attr("width", endSlider.pos() - startSlider.pos());
+			
+			// fire update event, if selection has changed:
+			$(document).trigger("graph-slider-move", [startSlider.value(), endSlider.value()]);
 		}
 
 		/**
@@ -322,11 +328,12 @@
 			// check bounds:
 			if (newX < 0 || newX+sWidth > width - rightBuffer + dayWidth) return;
 
-			selection.attr("x", newX);
-
-			// update the slider, they will update the selection
+			// update the sliders
 			startSlider.update(newX, true);
 			endSlider.update(newX + sWidth, true);
+			
+			// update the selection.
+			updateSelection();
 		}
 
 		/**
@@ -415,15 +422,8 @@
 					valueOffset = -dayWidth;
 				}
 
-				var newValue = new Date(x.invert(posX+valueOffset));
-				dateSpan.html(formatDate(newValue));
-
-				// fire update event, if date has changed:
-				if (_value != newValue) {
-					$(document).trigger("slider-" + _name, newValue);
-					_value = newValue;
-				}
-
+				_value = new Date(x.invert(posX+valueOffset));
+				dateSpan.html(formatDate(_value));
 			}
 
 			/**

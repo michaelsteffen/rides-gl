@@ -46,18 +46,7 @@
 			
 			// accept update events thrown by the graph
 			var quickTimeout;
-			$(document).bind("slider-range-end", function(event, date) {
-				endDate = date;
-				// prevent updates if the slider moves too fast
-				clearTimeout(quickTimeout);
-				quickTimeout = setTimeout(function() {
-					_showAllBetween(startDate, endDate);
-				}, 1);
-			});
-
-			$(document).bind("slider-range-start", function(event, date) {
-				startDate = date;
-				// prevent updates if the slider moves too fast
+			$(document).bind("graph-slider-move", function(event, startDate, endDate) {
 				clearTimeout(quickTimeout);
 				quickTimeout = setTimeout(function() {
 					_showAllBetween(startDate, endDate);
