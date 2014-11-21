@@ -29,33 +29,35 @@
 <div id='map-controls'></div>
 <div id='presets'>
 <ul>
-	<li><span class='label'>Presets:</span></li>
+	<li><span class='label'>Presets:</span></li><!--
+	--><li><i class="fa fa-map-marker"></i></li><!--
+	--><li><a href="#" onclick="rideMap.map.flyTo([29.8730, -95.9572],9.14,0);return false;">Houston</a></li><!--
+	--><li>/</li><!--
+	--><li><a href="#" onclick="rideMap.map.flyTo([29.7097, -95.4255],13.05,-22);return false;">West University</a></li><!--
+	--><li>/</li><!--
+	--><li><a href="#" onclick="rideMap.map.flyTo([37.8505, -121.2665],9.18,0);return false;">Antioch</a></li><!--
+	--><li>/</li><!--
+	--><li><a href="#" onclick="rideMap.map.flyTo([38.9626, -77.5945],9.25,16);return false;">Washington, DC</a></li><!--
 	
-	<li><i class="fa fa-map-marker"></i></li>
-	<li><a href="#" onclick="rideMap.map.flyTo([29.8730, -95.9572],9.14,0);return false;">Houston</a></li>
-	<li>/</li>
-	<li><a href="#" onclick="rideMap.map.flyTo([29.7097, -95.4255],13.05,-22);return false;">West University</a></li>
-	<li>/</li>
-	<li><a href="#" onclick="rideMap.map.flyTo([37.8505, -121.2665],9.18,0);return false;">Antioch</a></li>
-	<li>/</li>
-	<li><a href="#" onclick="rideMap.map.flyTo([38.9626, -77.5945],9.25,16);return false;">Washington, DC</a></li>
+	--><li><i class="fa fa-calendar"></i></li><!--
+	--><li><a href="#" onclick="rideMap.rangeSlider.slideTo(-31, -1, 1000);return false;">Last 30 Days</a></li><!--
+	--><li>/</li><!--
+	--><li><a href="#" onclick="rideMap.rangeSlider.slideTo(-91, -1, 1000);return false;">Last 90 Days</a></li><!--
+	--><li>/</li><!--
+	--><li><a href="#" onclick="rideMap.rangeSlider.slideTo('2013-01-01', '2013-12-31', 1000);return false;">2013</a></li><!--
+	--><li>/</li><!--
+	--><li><a href="#" onclick="rideMap.rangeSlider.slideTo('2014-01-01', '2014-12-31', 1000);return false;">2014</a></li><!--
+	--><li>/</li><!--
+	--><li><a href="#" onclick="rideMap.rangeSlider.slideTo(0, -1, 1000);return false;">All Time</a></li><!--
 	
-	<li><i class="fa fa-calendar"></i></li>
-	<li><a href="#" onclick="rideMap.rangeSlider.slideTo(-31, -1, 1000);return false;">Last 30 Days</a></li>
-	<li>/</li>
-	<li><a href="#" onclick="rideMap.rangeSlider.slideTo(-91, -1, 1000);return false;">Last 90 Days</a></li>
-	<li>/</li>
-	<li><a href="#" onclick="rideMap.rangeSlider.slideTo('2013-01-01', '2013-12-31', 1000);return false;">2013</a></li>
-	<li>/</li>
-	<li><a href="#" onclick="rideMap.rangeSlider.slideTo('2014-01-01', '2014-12-31', 1000);return false;">2014</a></li>
-	<li>/</li>
-	<li><a href="#" onclick="rideMap.rangeSlider.slideTo(0, -1, 1000);return false;">All Time</a></li>
-	
-	<li><i class="fa fa-film"></i></li>
-	<li><a href="#" onclick="rideMap.animateBuild(60000, 6);return false;">Build the Map</a></li>
-	<li>/</li>
-	<li><a href="#" onclick="rideMap.animateSlidingWindow(30,20000);return false;">Sliding 30 Day Window</a></li>
+	--><li><i class="fa fa-film"></i></li><!--
+	--><li><a href="#" onclick="rideMap.animateBuild(60000, 6);return false;">Build the Map</a></li><!--
+	--><li>/</li><!--
+	--><li><a href="#" onclick="rideMap.animateSlidingWindow(30,20000);return false;">Sliding 30 Day Window</a></li>
 </ul>
+</div>
+<div id='instructions'>
+Drag the sliders to select a date range.  Hover over a bar in the graph or a ride in the map to highlight in both places.  Hold shift to highlight multiple rides.  Click the presets and see what happens.
 </div>
 
 </body>
