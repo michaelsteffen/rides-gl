@@ -90,23 +90,29 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 		if (duration < 2000) duration = 2000;
 		var dates = rideMap.dates;
 		var interpIndex = d3.interpolateRound(0, dates.length-1);
+		var lastIndex;
 		
 		rideMap.rangeSlider.slideTo(0, 1, 500, null, function() {
 			window.setTimeout(function() {
 				rideMap.rangeSlider.slideTo(0, -1, duration-1000, "linear", null, function(t) {
 					// get the date based on where we are in the transition (t)
 					var index = interpIndex(t);
+					
+					// bail if we haven't advanced a full date
+					if (index == lastIndex) return;
+					
 					var startIndex = index - trailingRides;
 					if (startIndex < 0) startIndex = 0;
 					var rides = [];
 					for (var i = startIndex; i <= index; i++) { 
 						var rides = rides.concat(dates[i].rides);
 					}
-		
+					
 					// create mock highlight events from the graph and the map to cause
 					// highlight updates on the other
 					$(document).trigger("graph-set-highlight", [rides]);
 					$(document).trigger("map-set-highlight", [rides]);
+					lastIndex = index;
 				});
 			}, 500);
 		});
