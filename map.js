@@ -32,7 +32,8 @@
 				container: 'map',
 				style: style,
 				center: [29.8730, -95.9572],
-				zoom: 9.14
+				zoom: 9.14,
+				hash: true
 			});
 			
 			// add the compass
