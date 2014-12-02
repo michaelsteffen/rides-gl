@@ -140,6 +140,10 @@
 			// update the X axis
 			x.range([0, width-rightBuffer]);
 			gXAxis.call(xAxis);
+			
+			// update the y axis (the 'ticks' that form the grid)
+			yAxis.tickSize(width)
+			gYAxis.call(yAxis).call(_customYTicks);
 
 			// update the slider
 			var startDate = rangeSlider.start().value();
