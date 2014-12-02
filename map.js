@@ -218,7 +218,6 @@
 		}
 	}
 
-
 	/**
 	 * Shows all rides for the specified period
 	 */
@@ -226,8 +225,8 @@
 		var style = rideMap.map.style;
 	
 		// set dates to midnight boundary
-		lastStartDate = startDate = d3.time.day.floor(startDate);
-		lastEndDate = endDate = d3.time.day.floor(endDate);
+		lastStartDate = startDate = rideMap.normDate(startDate);
+		lastEndDate = endDate = rideMap.normDate(endDate);
 		
 		// ensure updates at a max of 100ms frequency
 		if (!needsUpdate) return;
@@ -241,14 +240,13 @@
 			}
 		}, 100);
 
-
 		// capture the current highlight layers
 		var highlightClasses = style.getClassList().filter(function(e) { return e.slice(-10) === '_highlight'; });
 		// show the selected layers
 		var classes = [];
 		var dates = rideMap.dates;
-		var startIndex = d3.time.days(dates[0].date, startDate).length; 
-		var endIndex = d3.time.days(dates[0].date, endDate).length;
+		var startIndex = rideMap.dateIndex(startDate); 
+		var endIndex = rideMap.dateIndex(endDate);
 		for (var i = startIndex; i <= endIndex; i++) {
 			var rides = dates[i].rides;
 			for (var j = 0; j < rides.length; j++) {

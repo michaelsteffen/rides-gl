@@ -168,6 +168,10 @@ path.area#active-area {
 }
 
 .bar {
+  fill: #888;
+}
+
+.bar.select {
   fill: steelblue;
 }
 

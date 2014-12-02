@@ -14,8 +14,12 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 
 	rideMap.bootstrap = bootstrap;
 	rideMap.getRideList = getRideList;
+	rideMap.normDate = normDate;
+	rideMap.dateIndex = dateIndex;
 	rideMap.animateBuild = animateBuild;
 	rideMap.animateSlidingWindow = animateSlidingWindow;
+	
+	var firstDate;
 
 	/**
 	 * Boostraps the ride map
@@ -36,21 +40,20 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 		d3.json("rides.json", function(err, data) {
 			if (err) throw err;
 			
-			rideMap.rides = data;
+			// initialize rides array with the data
+			var rides = rideMap.rides = data;
 			
-			// set up rideMap.dates as an array;
-			// the index is the # of days after the first ride
-			// (we are trusting that the input data is sorted by date)
-			
-			// midnight on the day of the first ride . . .
-			var firstDate = d3.time.day.floor(new Date(data[0].date));
+			// set firstDate
+			// (here an immediately below we are trusting that the input data is sorted by date)
+			firstDate = normDate(new Date(data[0].date));
  
-			for (var i=0; i < data.length; i++) {
-				var ride = data[i];
-				var date = d3.time.day.floor(new Date(ride.date));
+ 			// set up rideMap.dates as an array;
+			// the index is the # of days after the firstDate
+			for (var i=0; i < rides.length; i++) {
+				var ride = rides[i];
+				var date = normDate(new Date(ride.date));
 				ride.date = date;
-				// number of midnights since the firstDate
-				var index = d3.time.days(firstDate, date).length;
+				var index = dateIndex(date);
 				if (!rideMap.dates[index]) {
 					rideMap.dates[index] = { 
 						date: date,
@@ -83,6 +86,23 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 		}); 
 		
 		return dfd.promise();
+	}
+	
+	/**
+	* Takes an arbitrary date and normalizes it to the prior midnight boundary. 
+	*/
+	function normDate(date) {
+		return d3.time.day.floor(date);
+	}
+	
+	/**
+	* Takes a normalized date and returns the index in the dates array.
+	* If the date is not normalized, the index may be off by one.
+	*/
+	function dateIndex(date) {
+		// commenting out error checking for now to save a little time (probably silly)
+		// if (!firstDate) return; 
+		return d3.time.days(firstDate, date).length;
 	}
 	
 	function animateBuild(duration, trailingRides) {
@@ -128,46 +148,5 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 				rideMap.rangeSlider.slideTo(-(days+1), -1, duration-1000, "linear");
 			}, 500);
 		});
-	}
-	
-	function _doBigButton() {
-		if (rideMap.mapState == 'clear') {
-			rideMap.mapState = 'playing';
-			$('#bigbutton')
-				.removeClass('pure-button-primary')
-				.html('Playing . . .');
-			console.time("animation");
-			_showNextRide();
-		} else if (rideMap.mapState == 'complete') {
-			rideMap.map.style.setClassList([]);
-			rideMap.mapState = 'clear';
-			rideMap.currentRide = -1;
-			$('#bigbutton').html('Play');
-		}
-	}
-	
-	function _showNextRide() {
-		if (rideMap.currentRide < rideMap.rides.length - 1) {
-			rideMap.currentRide++;
-		
-			// use getClassList and setClassList to change multiple classes at once 
-			var classes = rideMap.map.style.getClassList();	  
-			
-			/* if (rideMap.currentRide >= 0) {
-				index = classes.indexOf(rideMap.rides[rideMap.currentRide-1] + '_highlight');
-				classes.splice(index, 1);
-			} 
-			classes.push(rideMap.rides[rideMap.currentRide] + '_highlight'); */
-			classes.push(rideMap.rides[rideMap.currentRide].name + '_active');
-			rideMap.map.style.setClassList(classes);
-			window.setTimeout(_showNextRide, 1);
-		} else {
-			//rideMap.map.style.removeClass(rideMap.rides[rideMap.currentRide] + '_highlight');
-			console.timeEnd("animation");
-			rideMap.mapState = 'complete';
-			$('#bigbutton')
-				.addClass('pure-button-primary')
-				.html('Clear');
-		}
 	}
 })();

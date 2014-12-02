@@ -11,6 +11,7 @@
 	var rightBuffer;
 	var dayWidth;
 	var rides, dates;
+	var highlightedBars;
 	var rangeSlider;
 
 	var formatDate = d3.time.format("%b %-d");
@@ -31,6 +32,7 @@
 		
 		rides = rideMap.rides;
 		dates = rideMap.dates;
+		highlightedBars = {};
 
 		// calculate the width of each bar
 		dayWidth = (width-rightBuffer)/dates.length;
@@ -64,13 +66,7 @@
 			.scale(x)
 			.orient("bottom")
 			.tickSize(4)
-			.tickFormat( function (d) {
-				if (d.getMonth() == 0) {
-					return (d3.time.format("Jan '%y"))(d);
-				} else {
-					return (d3.time.format("%b"))(d);
-				}
-			})
+			.tickFormat(_xTickFormat)
 			.ticks(d3.time.months);
 
 		yAxis = d3.svg.axis()
@@ -170,6 +166,16 @@
 		  .attr("dy", -3);
 	}
 	
+	function _xTickFormat(d) {
+		if (width >= 750) {
+			if (d.getMonth() == 0) return (d3.time.format("Jan '%y"))(d);
+			return (d3.time.format("%b"))(d);
+		} else {
+			if (d.getMonth() == 0) return (d3.time.format("'%y"))(d);
+			return (d3.time.format("%b"))(d)[0];
+		}
+	}
+	
 	function _barOnMouseEnter(d) {
 		if (d3.event.shiftKey) {
 			_addHighlight(['#' + this.id]);
@@ -188,15 +194,28 @@
 	}
 
 	function _addHighlight(bars) {
+		// update the graph
 		var barList = bars.join(', ');
-		d3.selectAll(barList).attr("class", "bar highlight");
+		d3.selectAll(barList).classed("highlight", true);
+		
+		// update the highlightBars index
+		for (var i=0; i<bars.length; i++) {
+			highlightedBars[bars[i]] = true;
+		}
 	}
 	
 	function _setHighlight(bars) {
-		d3.selectAll(".bar").attr("class", "bar");
+		// update the graph
+		d3.selectAll(".bar").classed("highlight", false);
 		if (bars.length) {
 			var barList = bars.join(', ');
-			d3.selectAll(barList).attr("class", "bar highlight");
+			d3.selectAll(barList).classed("highlight", true);
+		}
+		
+		// update the highlightBars index
+		highlightedBars = {};
+		for (var i=0; i<bars.length; i++) {
+			highlightedBars[bars[i]] = true;
 		}
 	}
 	
@@ -210,7 +229,7 @@
 		
 		return bars;
 	}
-	
+		
 	/**
 	 * builds the Range slider composed of two separate sliders and a selection marquee
 	 */
@@ -218,6 +237,7 @@
 		var startDate = d3.time.day.offset(dates[dates.length-1].date, -90);
 		var startSlider = _buildSlider(x(startDate), "range-start", canvas);
 		var endSlider = _buildSlider(width - rightBuffer + dayWidth, "range-end", canvas);
+		var lastUpdateStart, lastUpdateEnd;
 
 		// constrain the slider to not past each other or the ends of the graph
 		startSlider.constrain(function(event, ui) {
@@ -282,6 +302,51 @@
 				.each("end", callback);
 		}
 		
+		/**
+		 * Updates the bounds of the selection marquee according to the positions of the sliders
+		 */
+		function updateSelection() {
+			if (!selection) return;
+			if (lastUpdateStart === startSlider.pos() && lastUpdateEnd === endSlider.pos()) return;
+			
+			var startDate = rideMap.normDate(startSlider.value());
+			var endDate = rideMap.normDate(endSlider.value());
+			var dates = rideMap.dates;
+			
+			selection.attr("x", startSlider.pos());
+			selection.attr("width", endSlider.pos() - startSlider.pos());
+			
+			var startIndex = rideMap.dateIndex(startDate); 
+			var endIndex = rideMap.dateIndex(endDate);
+			
+			// sort the bars into four categories
+			var selectedBars = [];
+			var selectedHighlightedBars = [];
+			var unselectedBars = [];
+			var unselectedHighlightedBars = [];
+			for (var i = 0; i < dates.length; i++) {
+				var id = '#' + barID(dates[i].date);
+				if (i < startIndex || i > endIndex) {
+					highlightedBars[id] ? unselectedHighlightedBars.push(id) : unselectedBars.push(id);
+				} else {
+					highlightedBars[id] ? selectedHighlightedBars.push(id) : selectedBars.push(id);
+				}
+			}
+			
+			// style the four types of bars appropriately
+			unselectedBars.length && d3.selectAll(unselectedBars.join(', '))
+				.attr("class", "bar");
+			unselectedHighlightedBars.length && d3.selectAll(unselectedHighlightedBars.join(', '))
+				.attr("class", "bar highlight");
+			selectedBars.length && d3.selectAll(selectedBars.join(', '))
+				.attr("class", "bar select");
+			selectedHighlightedBars.length && d3.selectAll(selectedHighlightedBars.join(', '))
+				.attr("class", "bar select highlight");
+				
+			// fire update event
+			$(document).trigger("graph-slider-move", [startDate, endDate]);
+		}
+		
 		function _resolveDate(inDate) {
 			var dates = rideMap.dates;
 			
@@ -301,19 +366,6 @@
 			}
 			
 			return;
-		}
-
-		/**
-		 * Updates the bounds of the selection marquee according to the positions of the sliders
-		 */
-		function updateSelection() {
-			if (!selection) return;
-
-			selection.attr("x", startSlider.pos());
-			selection.attr("width", endSlider.pos() - startSlider.pos());
-			
-			// fire update event, if selection has changed:
-			$(document).trigger("graph-slider-move", [startSlider.value(), endSlider.value()]);
 		}
 
 		/**
