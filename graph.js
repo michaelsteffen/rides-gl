@@ -95,10 +95,7 @@
 			.attr("class", "y axis")
 			.call(yAxis)
 			.call(_customYTicks);
-			
-		// build the range slider
-	  rangeSlider = rideMap.rangeSlider = _buildRangeSlider(sliderLayer);
-		
+				
 		// add the bars
 		graphLayer.selectAll(".bar")
       .data(dates)
@@ -120,6 +117,9 @@
       .delay( function(d,i) { return i/dates.length * 1000; } )
       .attr("y", function(d) { return y(d.length); })
       .attr("height", function(d) { return height - y(d.length); });
+
+		// build the range slider
+	  rangeSlider = rideMap.rangeSlider = _buildRangeSlider(sliderLayer);
 
 		// accept highlight events thrown by the map
 		$(document).bind("map-add-highlight", function(event, rideNames) {
@@ -306,11 +306,12 @@
 		 * Updates the bounds of the selection marquee according to the positions of the sliders
 		 */
 		function updateSelection() {
+			console.time("updateSelection");
 			if (!selection) return;
 			if (lastUpdateStart === startSlider.pos() && lastUpdateEnd === endSlider.pos()) return;
 			
-			var startDate = rideMap.normDate(startSlider.value());
-			var endDate = rideMap.normDate(endSlider.value());
+			var startDate = startSlider.value();
+			var endDate = endSlider.value();
 			var dates = rideMap.dates;
 			
 			selection.attr("x", startSlider.pos());
@@ -319,32 +320,21 @@
 			var startIndex = rideMap.dateIndex(startDate); 
 			var endIndex = rideMap.dateIndex(endDate);
 			
-			// sort the bars into four categories
+			// sort the bars
 			var selectedBars = [];
-			var selectedHighlightedBars = [];
 			var unselectedBars = [];
-			var unselectedHighlightedBars = [];
 			for (var i = 0; i < dates.length; i++) {
 				var id = '#' + barID(dates[i].date);
-				if (i < startIndex || i > endIndex) {
-					highlightedBars[id] ? unselectedHighlightedBars.push(id) : unselectedBars.push(id);
-				} else {
-					highlightedBars[id] ? selectedHighlightedBars.push(id) : selectedBars.push(id);
-				}
+				(i < startIndex || i > endIndex) ? unselectedBars.push(id) : selectedBars.push(id);
 			}
 			
 			// style the four types of bars appropriately
-			unselectedBars.length && d3.selectAll(unselectedBars.join(', '))
-				.attr("class", "bar");
-			unselectedHighlightedBars.length && d3.selectAll(unselectedHighlightedBars.join(', '))
-				.attr("class", "bar highlight");
-			selectedBars.length && d3.selectAll(selectedBars.join(', '))
-				.attr("class", "bar select");
-			selectedHighlightedBars.length && d3.selectAll(selectedHighlightedBars.join(', '))
-				.attr("class", "bar select highlight");
+			unselectedBars.length && d3.selectAll(unselectedBars.join(', ')).classed("select", false);
+			selectedBars.length && d3.selectAll(selectedBars.join(', ')).classed("select", true);
 				
 			// fire update event
 			$(document).trigger("graph-slider-move", [startDate, endDate]);
+			console.timeEnd("updateSelection");
 		}
 		
 		function _resolveDate(inDate) {
