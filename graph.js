@@ -141,7 +141,7 @@
 			x.range([0, width-rightBuffer]);
 			gXAxis.call(xAxis);
 			
-			// update the y axis (the 'ticks' that form the grid)
+			// update the y axis (really, the 'ticks' that form the grid)
 			yAxis.tickSize(width)
 			gYAxis.call(yAxis).call(_customYTicks);
 
@@ -149,7 +149,7 @@
 			var startDate = rangeSlider.start().value();
 			var startPosX = x(startDate);
 			var endDate = rangeSlider.end().value();
-			var endPosX = x(endDate);
+			var endPosX = x(endDate) + dayWidth;
 			rangeSlider.start().update(startPosX, true);
 			rangeSlider.end().update(endPosX, true);
 			rangeSlider.updateSelection();
