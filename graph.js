@@ -306,7 +306,6 @@
 		 * Updates the bounds of the selection marquee according to the positions of the sliders
 		 */
 		function updateSelection() {
-			console.time("updateSelection");
 			if (!selection) return;
 			if (lastUpdateStart === startSlider.pos() && lastUpdateEnd === endSlider.pos()) return;
 			
@@ -334,7 +333,6 @@
 				
 			// fire update event
 			$(document).trigger("graph-slider-move", [startDate, endDate]);
-			console.timeEnd("updateSelection");
 		}
 		
 		function _resolveDate(inDate) {

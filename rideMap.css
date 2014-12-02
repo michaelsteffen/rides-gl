@@ -16,7 +16,7 @@ body {
 
 #instructions
 {
-	margin: 10px 0px 0px 38px;
+	margin: 15px 0px 25px 38px;
 	clear: both;
 	color:#666;
 	font-size:10px;
@@ -26,36 +26,45 @@ body {
 
 #presets
 {
-	margin-top:15px
+	margin: 15px 0px 15px 31px;
+	display: table;
+}
+
+#presets .label,
+#presets .options
+{
+	display: table-cell;
+	height: 100%;
+	line-height:20px;
+}
+
+#presets .label
+{
+	font-weight:700;
 }
 
 #presets ul
 {
 	color:#aaa;
 	list-style:none;
-	margin: 0px 0px 0px 31px;
+	display: inline-block;
+	margin:0;
 	padding:0;
-	line-height:20px;
+}
+
+@media screen and (max-width: 725px) {
+	#presets ul { 
+  	display: block;     
+  }
 }
 
 #presets ul a,
-#presets ul .label
+#presets .label
 {
 	color:#666;
 	text-decoration:none;
 	font-size:10px;
 	padding:0 7px;
-}
-
-#presets .fa
-{
-	color: #333;
-	padding-left:20px;
-}
-
-#presets ul .label
-{
-	font-weight:700;
 }
 
 #presets ul li
@@ -65,39 +74,16 @@ body {
 	padding:0;
 }
 
+#presets .fa
+{
+	color: #333;
+	padding-left:10px;
+}
+
 #presets ul li a:hover
 {
 	background:#f6f6f6
 }
-
-/* for dropdown: not used */
-
-/* #presets ul ul
-{
-	display:none;
-	position:absolute;
-	top:100%;
-	left:0;
-	background:#fff;
-	padding:0
-}
-
-#presets ul ul li
-{
-	float:none;
-	width:180px
-}
-
-#presets ul ul a
-{
-	line-height:120%;
-	padding:5px 15px
-}
-
-#presets ul li:hover > ul
-{
-	display:block
-} */
 
 /** Map Controls ========================================== */
 
