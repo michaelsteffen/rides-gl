@@ -25,13 +25,12 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFzMjIyIiwiYSI6Ikc2STF6MzAifQ.rRkEFqc17IcaQe
 	 * Boostraps the ride map
 	 */
 	function bootstrap() {		
-		if (mapboxgl.util.supported()) { 
-			$.when(rideMap.getRideList())
-				.then(rideMap.buildMap)
-				.then(rideMap.buildGraph);
-		} else {
-			$('html').addClass('not-supported');
-		}
+		$.when(rideMap.getRideList()).then( function() {
+				return mapboxgl.util.supported() ?
+					rideMap.buildMap() :
+					$(rideMap.containerDiv).addClass('not-supported');
+			})
+			.then(rideMap.buildGraph);
 	}
 	
 	function getRideList() {
