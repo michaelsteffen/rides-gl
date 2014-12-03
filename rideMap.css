@@ -11,7 +11,10 @@ body {
 	top: 0; 
 	left: 0; 
 	height: 500px; 
+	width: 100%;
 	margin-bottom: 20px;
+	background-color:#333;
+	display: table;
 }
 
 #unsupported-message
@@ -24,13 +27,19 @@ body {
 	text-align: center;
 	margin:0;
 	padding:0;
-	line-height: 400px;
+	vertical-align: middle;
 	display:none;
+}
+
+.not-supported
+{
+	border-collapse: separate;
+	border-spacing: 30px;
 }
 
 .not-supported #unsupported-message
 {
-	display: block;
+	display: table-cell;
 }
 
 /* === Presets Menus === */
