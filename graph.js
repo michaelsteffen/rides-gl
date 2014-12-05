@@ -8,10 +8,10 @@
 	var height;
 	var x, xAxis, gXAxis;
 	var y, yAxis, gYAxis;
+	var allBars;
 	var rightBuffer;
 	var dayWidth;
 	var rides, dates;
-	var highlightedBars;
 	var rangeSlider;
 
 	var formatDate = d3.time.format("%b %-d");
@@ -23,7 +23,7 @@
 	 */
 	function buildGraph() {
 		// Set the dimensions of the canvas / graph
-		margin = {top: 0, right: 45, bottom: 20, left: 45};
+		margin = {top: 0, right: 45, bottom: 30, left: 45};
 		width = $(window).width() - margin.left - margin.right;
 		height = 110 - margin.top - margin.bottom;
 		
@@ -32,7 +32,6 @@
 		
 		rides = rideMap.rides;
 		dates = rideMap.dates;
-		highlightedBars = {};
 
 		// calculate the width of each bar
 		dayWidth = (width-rightBuffer)/dates.length;
@@ -97,12 +96,12 @@
 			.call(_customYTicks);
 				
 		// add the bars
-		graphLayer.selectAll(".bar")
+		allBars = graphLayer.selectAll(".bar")
       .data(dates)
 			.enter().append("rect")
 			.attr("class", "bar")
 			.attr("id", function(d) { return barID(d.date); })
-      .attr("x", function(d) { return x(d.date); })
+      .attr("x", function(d) { return x(d.date)-dayWidth/2; })
       .attr("width", dayWidth)
       .attr("y", height)
       .attr("height", 0)
@@ -201,11 +200,6 @@
 		// update the graph
 		var barList = bars.join(', ');
 		d3.selectAll(barList).classed("highlight", true);
-		
-		// update the highlightBars index
-		for (var i=0; i<bars.length; i++) {
-			highlightedBars[bars[i]] = true;
-		}
 	}
 	
 	function _setHighlight(bars) {
@@ -214,12 +208,6 @@
 		if (bars.length) {
 			var barList = bars.join(', ');
 			d3.selectAll(barList).classed("highlight", true);
-		}
-		
-		// update the highlightBars index
-		highlightedBars = {};
-		for (var i=0; i<bars.length; i++) {
-			highlightedBars[bars[i]] = true;
 		}
 	}
 	
@@ -234,107 +222,75 @@
 		return bars;
 	}
 		
-	/**
-	 * builds the Range slider composed of two separate sliders and a selection marquee
-	 */
 	function _buildRangeSlider(canvas) {
 		var startDate = d3.time.day.offset(dates[dates.length-1].date, -90);
-		var startSlider = _buildSlider(x(startDate), "range-start", canvas);
-		var endSlider = _buildSlider(width - rightBuffer + dayWidth, "range-end", canvas);
-		var lastUpdateStart, lastUpdateEnd;
-
-		// constrain the slider to not past each other or the ends of the graph
-		startSlider.constrain(function(event, ui) {
-			ui.position.left = Math.min(ui.position.left, endSlider.pos() + margin.left);
-			ui.position.left = Math.max(margin.left, ui.position.left);
-		});
-
-		endSlider.constrain(function(event, ui) {
-			ui.position.left = Math.max(ui.position.left, startSlider.pos() + margin.left);
-			ui.position.left = Math.min(margin.left + width - rightBuffer + dayWidth, ui.position.left);
-		});
-
-		var dragBehavior = d3.behavior.drag()
-			.on("drag", _onSelectionDrag);
-
+		var endDate = dates[dates.length-1].date;
+		
+		// build the brush
+		var brush = d3.svg.brush()
+  		.x(x)
+    	.extent([startDate, endDate])
+    	.on("brush", updateSelection);
+    	
+    var brushg = canvas.append("g")
+    	.attr("class", "range-slider")
+    	.call(brush);
+		
 		// build the selection window
-		var selection =	canvas.append("rect")
-			.attr("id", "selection")
-			.attr("class", "selection")
-			.attr("x", startSlider.pos())
-			.attr("y", 0 - margin.top)
-			.attr("height", height + margin.top)
-			.attr("width", endSlider.pos() - startSlider.pos())
-			.call(dragBehavior);
+		var selection =	brushg.selectAll("rect")
+			.attr("height", height + margin.top);
+		
+		// build the drag handles 
+		var startSlider = _buildSlider("range-start", startDate);
+		var endSlider = _buildSlider("range-end", endDate);
+		var lastUpdateStart, lastUpdateEnd;
 
 		// initialize the selected bars and rides
 		updateSelection();
 
 		/**
-		 * Slides the two sliders to the new positions using a transition
+		 * Slides the selector to a new position using a transition.
+		 * Callback, optional, is called at the end of the transition.
+		 * Tween, also optional, is called at each frame in the transition with value
+		 *  t, which varies between 0 and 1.
+		 * Accepts either date objects or strings for start and end date so it 
+		 * can easily be called directly from the webpage
 		 */
-		function slideTo(newStartDate, newEndDate, duration, ease, callback, factory) {
+		function slideTo(newStartDate, newEndDate, duration, ease, callback, customTween) {
 			var duration = duration || 2000;
 			var ease = ease || "cubic-in-out";
-			var factory = factory || function() {};
+			var customTween = customTween || null;
 
 			newStartDate = _resolveDate(newStartDate);
 			newEndDate = _resolveDate(newEndDate);
 			
 			if (!(newStartDate && newEndDate)) return;
 			
-			var newStartPos = x(newStartDate);
-			var newEndPos = x(newEndDate)+dayWidth;
-			
-			d3.transition()
-				.duration(duration)
-				.tween("moveTween", function () {
-					var sI = d3.interpolateRound(startSlider.pos(), newStartPos);
-					var eI = d3.interpolateRound(endSlider.pos(), newEndPos);
-					var _width = d3.select(this).attr("width");
-
-					return function(t) {
-						var iStart = sI(t),
-						    iEnd = eI(t);
-						startSlider.update(iStart, true);
-						endSlider.update(iEnd, true);
-						updateSelection();
-						factory(t);
-					}
-				})
-				.ease(ease)
-				.each("end", callback);
+			brushg.transition()
+      	.duration(duration)
+      	.ease(ease)
+      	.call(brush.extent([newStartDate,newEndDate]))
+      	.call(brush.event)
+      	.tween("customTween", function () { return customTween; })
+      	.each("end", callback);
 		}
 		
 		/**
-		 * Updates the bounds of the selection marquee according to the positions of the sliders
+		 * Updates the bar colors based on the selection marquee
 		 */
 		function updateSelection() {
-			if (!selection) return;
-			if (lastUpdateStart === startSlider.pos() && lastUpdateEnd === endSlider.pos()) return;
-			
 			var startDate = startSlider.value();
 			var endDate = endSlider.value();
-			var dates = rideMap.dates;
 			
-			selection.attr("x", startSlider.pos());
-			selection.attr("width", endSlider.pos() - startSlider.pos());
-			
-			var startIndex = rideMap.dateIndex(startDate); 
-			var endIndex = rideMap.dateIndex(endDate);
-			
-			// sort the bars
-			var selectedBars = [];
-			var unselectedBars = [];
-			for (var i = 0; i < dates.length; i++) {
-				var id = '#' + barID(dates[i].date);
-				(i < startIndex || i > endIndex) ? unselectedBars.push(id) : selectedBars.push(id);
-			}
-			
-			// style the four types of bars appropriately
-			unselectedBars.length && d3.selectAll(unselectedBars.join(', ')).classed("select", false);
-			selectedBars.length && d3.selectAll(selectedBars.join(', ')).classed("select", true);
+			if (lastUpdateStart === startDate && lastUpdateEnd === endDate) return;	
+			allBars.classed("select", function(d) { return startDate <= d.date && d.date <= endDate; });
 				
+			startSlider.update();
+			endSlider.update();	
+			
+			lastUpdateStart = startDate;
+			lastUpdateEnd = endDate; 
+			
 			// fire update event
 			$(document).trigger("graph-slider-move", [startDate, endDate]);
 		}
@@ -360,149 +316,65 @@
 			return;
 		}
 
-		/**
-		 * Handles dragging of the selection window
-		 */
-		function _onSelectionDrag() {
-			var $this = d3.select(this),
-				currentX = +$this.attr("x"),
-				sWidth = +$this.attr("width"),
-				newX = currentX + d3.event.dx;
-
-			// check bounds:
-			if (newX < 0 || newX+sWidth > width - rightBuffer + dayWidth) return;
-
-			// update the sliders
-			startSlider.update(newX, true);
-			endSlider.update(newX + sWidth, true);
+		function _buildSlider(sliderName, date) {
+			if (sliderName === "range-start") {
+				var handleSelector = ".w";
+				var extentIndex = 0;
+				var translate = "translate(-40," + height + ")";
+				var flipH = "";
+				var textTranslate = "translate(-20," + (height+14) + ")";
+			} else if (sliderName === "range-end") {
+				var handleSelector = ".e";
+				var extentIndex = 1;
+				var translate = "translate(40," + height + ")";
+				var flipH = " scale(-1,1)";
+				var textTranslate = "translate(20," + (height+14) + ")";
+			} else {
+				return;
+			}
 			
-			// update the selection.
-			updateSelection();
-		}
+			// path for the slider shape
+			var path = "m0,0l40,0l0,30l-40,-10l0,-20z"
+			
+			var sliderg = brushg.selectAll(".resize"+handleSelector).append("g");
+			
+			sliderg.append("path")
+				.attr("id", sliderName)
+				.attr("transform", translate + flipH)
+				.attr("d", path);
+			
+			var sliderText = sliderg.append("text")
+				.attr("class", "slider-date")
+				.attr("transform", textTranslate)
+				.attr("text-anchor", "middle")
 
-		/**
-		 * Builds a slider.
-		 * The slider is a combination of draggable div(the thumb) & svg guideline driven with d3.js.
-		 * There's two-way bind between the div and svg.
-		 * If the user drags the thumb div, the svg graphics will be updated.
-		 * If the svg guideline is being updated (we're using d3 transitions), the div is also updated.
-		 */
-		function _buildSlider(myPos, sliderName, canvas) {
-			var _pos = myPos;
-			var _name = sliderName;
-			var _value = 0;
-			var _constrain;
-			var controller = d3.select("#map-controls");
-
-			var marker = canvas.append("g")
-			    .attr("class", "marker " + _name);
-
-			// add the guideline
-			var guideline = marker.append("line")
-					.attr("class", "guideline")
-					.attr("x1", 0)
-					.attr("y1", -height*2)
-					.attr("x2", 0)
-					.attr("y2", height*2);
-
-			// builds the slider as div elements. this allows to have them outside of the svg bounds
-			var slider = controller.append("div")
-					.attr("class", "slider " + _name);
-
-			var sliderThumb = slider.append("div")
-					.attr("class", "slider-thumb")
-					.style("left", _pos + margin.left + "px");
-
-			var dateSpan = sliderThumb.append("span")
-					.attr("class", "date");
-
-			// add the scroll thumb. using jQ Draggable in order to have it outside the svg bounds
-			$(".slider." + _name + " .slider-thumb").draggable({
-				axis: "x",
-				start : function() {
-					$(this).closest(".slider").addClass("drag");
-					marker.classed("drag", true);
-					updateSelection();
-				},
-				drag: function(event, ui) {
-					// check for constraints
-					if (_constrain) {
-						_constrain(event, ui);
-					}
-					updateSlider($(this).position().left - margin.left);
-					updateSelection();
-				},
-				stop : function() {
-					$(this).closest(".slider").removeClass("drag");
-					marker.classed("drag", false);
-					updateSlider($(this).position().left - margin.left);
-					updateSelection();
-				}
-			});
-
-			//init the marker:
-			updateSlider(_pos, true);
+			// init the marker:
+			updateSlider();
 			
 			/**
-			 * Updates the slider to match the specified position.
-			 * This is usually called by the draggable thumb.
+			 * Updates the slider text to match the current position.
 			 */
-			function updateSlider(posX, updateThumb) {
-				if (posX < 0 || posX > width) return;
-
-				// update the slider x:
-				_pos = posX;
-
-				// update the div thumb, if the flag is set.
-				// this happens when update() is not called from the thumb itself
-				if (updateThumb) {
-					$(".slider." + _name + " .slider-thumb").css({left: posX + margin.left});
-				}
-
-				marker.attr("transform", "translate(" + posX + "," + 0 + ")");
-
-				var valueOffset = 0;
-				if (_name == "range-end") {
-					valueOffset = -dayWidth;
-				}
-
-				_value = new Date(x.invert(posX+valueOffset));
-				dateSpan.html(formatDate(_value));
+			function updateSlider() {
+				sliderText.text(formatDate(value()));
 			}
 
-			/**
-			 * returns the current value of the slider
-			 */
 			function value() {
-				return _value;
-			}
-
-			function pos() {
-				return _pos;
-			}
-
-			/**
-			 * Sets a new constrain callback
-			 */
-			function constrain(dragConstrain) {
-				_constrain = dragConstrain;
+				return (brush.extent())[extentIndex];
 			}
 
 			return {
-				constrain: constrain,
 				update: updateSlider,
-				value: value,
-				pos: pos
+				value: value
 			};
 			
 		} //_buildSlider
 
 		// RangeSlider interface
 		return {
+			updateSelection: updateSelection,
 			slideTo: slideTo,
 			start: function() { return startSlider; },
-			end: function() { return endSlider; },
-			updateSelection: updateSelection
+			end: function() { return endSlider; }
 		}
-	}// buildRange
+	} // _buildRangeSlider
 })();
