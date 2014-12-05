@@ -243,8 +243,8 @@
 		var endSlider = _buildSlider("range-end", endDate);
 		var lastUpdateStart, lastUpdateEnd;
 
-		// initialize the selected bars and rides
-		updateSelection();
+		// initialize the selected bars and rides by firing the brushing events
+		brush.event(brushg);
 
 		/**
 		 * Slides the selector to a new position using a transition.
