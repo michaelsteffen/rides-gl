@@ -136,6 +136,10 @@
 			width = $(window).width() - margin.left - margin.right;
 			dayWidth = (width-rightBuffer)/dates.length;
 
+			// get the slider positions before we update the x axis
+			var startDate = rangeSlider.start().value();
+			var endDate = rangeSlider.end().value();
+
 			// update the X axis
 			x.range([0, width-rightBuffer]);
 			gXAxis.call(xAxis);
@@ -145,13 +149,7 @@
 			gYAxis.call(yAxis).call(_customYTicks);
 
 			// update the slider
-			var startDate = rangeSlider.start().value();
-			var startPosX = x(startDate);
-			var endDate = rangeSlider.end().value();
-			var endPosX = x(endDate) + dayWidth;
-			rangeSlider.start().update(startPosX, true);
-			rangeSlider.end().update(endPosX, true);
-			rangeSlider.updateSelection();
+			rangeSlider.slideTo(startDate, endDate);
 			
 			// update the bars
 			graphLayer.selectAll(".bar")
@@ -257,7 +255,6 @@
 		 * can easily be called directly from the webpage
 		 */
 		function slideTo(newStartDate, newEndDate, duration, ease, callback, customTween) {
-			var duration = duration || 2000;
 			var ease = ease || "cubic-in-out";
 			var customTween = customTween || null;
 
@@ -266,13 +263,18 @@
 			
 			if (!(newStartDate && newEndDate)) return;
 			
-			brushg.transition()
-      	.duration(duration)
-      	.ease(ease)
-      	.call(brush.extent([newStartDate,newEndDate]))
-      	.call(brush.event)
-      	.tween("customTween", function () { return customTween; })
-      	.each("end", callback);
+			if (duration) {
+				brushg.transition()
+					.duration(duration)
+					.ease(ease)
+					.call(brush.extent([newStartDate,newEndDate]))
+					.call(brush.event)
+					.tween("customTween", function () { return customTween; })
+					.each("end", callback);
+			} else {
+				brushg.call(brush.extent([newStartDate, newEndDate]));
+				updateSelection();
+			}
 		}
 		
 		/**
@@ -306,8 +308,8 @@
 				} else {
 					return dates[dates.length + inDate].date;
 				} 
-			} else if (typeof inDate === 'string') {
-				var date = new Date(inDate);
+			} else if (typeof inDate === 'string' || inDate instanceof Date) {
+				var date = (typeof inDate === 'string') ? new Date(inDate) : inDate;
 				if (date > dates[dates.length-1].date) date = dates[dates.length-1].date;
 				if (date < dates[0].date) date = dates[0].date;
 				return date;
