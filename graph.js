@@ -235,8 +235,10 @@
     	.call(brush);
 		
 		// build the selection window
+		// include a small top offset for the border
 		var selection =	brushg.selectAll("rect")
-			.attr("height", height + margin.top);
+			.attr("height", height + margin.top - 2)
+			.attr("y", 2);
 		
 		// build the drag handles 
 		var startSlider = _buildSlider("range-start", startDate);
