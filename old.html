@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset='utf-8' />
+	<title></title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />	
+	<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+	<link rel='stylesheet' href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.4.0/mapbox-gl.css' />
+	<link rel='stylesheet' href='rideMap.css' />
+	<script src='https://code.jquery.com/jquery-2.1.1.min.js'></script>
+	<script src='https://code.jquery.com/ui/1.11.2/jquery-ui.min.js'></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js' charset='utf-8'></script>
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.4.2/mapbox-gl.js'></script>
+	<script src='app.js'></script>
+	<script src='map.js'></script>
+	<script src='graph.js'></script>
+
+	<script>
+		$().ready(function() {
+			rideMap.bootstrap();
+		});
+	</script>
+</head>
+
+<body>
+
+<div id='map'>
+<p id='unsupported-message'>Sorry, your browser doesn't support WebGL. :(</p>
+</div>
+<div id='map-controls'></div>
+<div id='presets'>
+	<div class='label'>Presets:</div>
+	<div class='options'>
+		<ul><!--
+		--><li><i class="fa fa-map-marker"></i></li><!--
+		--><li><a href="#" onclick="rideMap.map.flyTo([29.8417, -95.7142],9.14,0);return false;">Houston</a></li><!--
+		--><li>/</li><!--
+		--><li><a href="#" onclick="rideMap.map.flyTo([29.7097, -95.4255],13.05,-22);return false;">West University</a></li><!--
+		--><li>/</li><!--
+		--><li><a href="#" onclick="rideMap.map.flyTo([37.8505, -121.2665],9.18,0);return false;">Antioch</a></li><!--
+		--><li>/</li><!--
+		--><li><a href="#" onclick="rideMap.map.flyTo([38.9626, -77.5945],9.25,16);return false;">Washington, DC</a></li>
+		</ul>
+		<ul><!--
+		--><li><i class="fa fa-calendar"></i></li><!--
+		--><li><a href="#" onclick="rideMap.rangeSlider.slideTo(-31, -1, 1500);return false;">Last 30 Days</a></li><!--
+		--><li>/</li><!--
+		--><li><a href="#" onclick="rideMap.rangeSlider.slideTo(-91, -1, 1500);return false;">Last 90 Days</a></li><!--
+		--><li>/</li><!--
+		--><li><a href="#" onclick="rideMap.rangeSlider.slideTo('2013-01-01', '2013-12-31', 1500);return false;">2013</a></li><!--
+		--><li>/</li><!--
+		--><li><a href="#" onclick="rideMap.rangeSlider.slideTo('2014-01-01', '2014-12-31', 1500);return false;">2014</a></li><!--
+		--><li>/</li><!--
+		--><li><a href="#" onclick="rideMap.rangeSlider.slideTo(0, -1, 1000);return false;">All Time</a></li>
+		</ul>
+		<ul><!--
+		--><li><i class="fa fa-film"></i></li><!--
+		--><li><a href="#" onclick="rideMap.animateBuild(45000, 6);return false;">Build the Map</a></li><!--
+		--><li>/</li><!--
+		--><li><a href="#" onclick="rideMap.animateSlidingWindow(30,20000);return false;">Sliding 30 Day Window</a></li>
+		</ul>
+	</div>
+</div>
+<div id='instructions'>
+Drag the sliders to select a date range.  Hover over a bar in the graph or a ride in the map to highlight in both places.  Hold shift to highlight multiple rides.  Click the presets and see what happens.
+</div>
+
+</body>
+</html>

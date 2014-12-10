@@ -228,7 +228,7 @@
 		lastStartDate = startDate = rideMap.normDate(startDate);
 		lastEndDate = endDate = rideMap.normDate(endDate);
 		
-		// ensure updates at a max of 100ms frequency
+		// ensure updates at a max of 30ms frequency
 		if (!needsUpdate) return;
 		needsUpdate = false;
 
@@ -238,7 +238,7 @@
 			if (lastStartDate != startDate || lastEndDate != endDate) {
 				_showAllBetween(lastStartDate, lastEndDate);
 			}
-		}, 100);
+		}, 30);
 
 		// capture the current highlight layers
 		var highlightClasses = style.getClassList().filter(function(e) { return e.slice(-10) === '_highlight'; });
