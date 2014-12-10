@@ -5,6 +5,7 @@
 	
 	var updateTimeout;
 	var needsUpdate = true;
+	var lastStartDate, lastEndDate;
 	var lastFeatures;
 	var shiftDown;
 
@@ -224,8 +225,20 @@
 		var style = rideMap.map.style;
 	
 		// set dates to midnight boundary
-		startDate = rideMap.normDate(startDate);
-		endDate = rideMap.normDate(endDate);
+		lastStartDate = startDate = rideMap.normDate(startDate);
+		lastEndDate = endDate = rideMap.normDate(endDate);
+		
+		// ensure updates at a max of 30ms frequency
+		if (!needsUpdate) return;
+		needsUpdate = false;
+
+		updateTimeout = setTimeout(function() {
+			needsUpdate = true;
+
+			if (lastStartDate != startDate || lastEndDate != endDate) {
+				_showAllBetween(lastStartDate, lastEndDate);
+			}
+		}, 30);
 
 		// capture the current highlight layers
 		var highlightClasses = style.getClassList().filter(function(e) { return e.slice(-10) === '_highlight'; });
