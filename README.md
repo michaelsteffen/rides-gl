@@ -1,4 +1,4 @@
 rides-gl
 ========
 
-Mapbox GL implementation to dynamically map bike ride data
+Mapbox GL + d3 experiment to map bike rides
